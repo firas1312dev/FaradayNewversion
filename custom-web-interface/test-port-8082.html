@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Faraday - Port 8082</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test API Faraday - Port 8082</h1>
+    
+    <p><strong>Configuration actuelle :</strong></p>
+    <ul>
+        <li>Proxy CORS : http://localhost:8082</li>
+        <li>Interface Web : http://localhost:8888</li>
+        <li>Faraday API : http://localhost:5985</li>
+    </ul>
+    
+    <button onclick="testAPI()">🧪 Tester l'API</button>
+    <button onclick="clearResults()">🧹 Effacer</button>
+    
+    <div id="results"></div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testAPI() {
+            clearResults();
+            addResult('🚀 Début du test API avec le port 8082', 'info');
+            addResult(`📍 URL actuelle: ${window.location.href}`, 'info');
+            
+            // Test 1: Connection au proxy
+            addResult('', 'info');
+            addResult('🔍 Test 1: Connexion au proxy CORS', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:8082/_api/v3/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ Proxy accessible - Info récupérée', 'success');
+                    addResult(`📊 Version Faraday: ${data.Version || 'inconnue'}`, 'success');
+                } else {
+                    addResult(`❌ Proxy erreur: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Proxy inaccessible: ${error.message}`, 'error');
+            }
+            
+            // Test 2: Récupération des workspaces
+            addResult('', 'info');
+            addResult('🔍 Test 2: Récupération des workspaces', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:8082/_api/v3/ws', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📊 Données workspaces:', data);
+                    
+                    if (data.rows && Array.isArray(data.rows)) {
+                        addResult(`✅ Workspaces récupérés: ${data.rows.length} trouvé(s)`, 'success');
+                        
+                        data.rows.slice(0, 3).forEach((ws, index) => {
+                            addResult(`  📁 ${index + 1}. ${ws.name} (${ws.active ? 'actif' : 'inactif'})`, 'success');
+                        });
+                        
+                        if (data.rows.length > 3) {
+                            addResult(`  📁 ... et ${data.rows.length - 3} autres`, 'success');
+                        }
+                    } else if (Array.isArray(data)) {
+                        addResult(`✅ Workspaces récupérés: ${data.length} trouvé(s)`, 'success');
+                        
+                        data.slice(0, 3).forEach((ws, index) => {
+                            const name = ws.name || ws.key || `Workspace ${index + 1}`;
+                            addResult(`  📁 ${index + 1}. ${name}`, 'success');
+                        });
+                    } else {
+                        addResult('⚠️ Format de réponse inattendu pour les workspaces', 'error');
+                        addResult(`📊 Type: ${typeof data}, Contenu: ${JSON.stringify(data).substring(0, 200)}...`, 'info');
+                    }
+                } else {
+                    addResult(`❌ Erreur workspaces: ${response.status} ${response.statusText}`, 'error');
+                    const text = await response.text();
+                    addResult(`🔍 Détails: ${text.substring(0, 200)}...`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur récupération workspaces: ${error.message}`, 'error');
+            }
+            
+            // Test 3: Test avec l'API JavaScript
+            addResult('', 'info');
+            addResult('🔍 Test 3: Test avec FaradayAPI JavaScript', 'info');
+            
+            try {
+                // Créer une instance directe de l'API avec le bon port
+                const testAPI = {
+                    baseURL: 'http://localhost:8082',
+                    credentials: btoa('faraday:faraday'),
+                    
+                    async getWorkspaces() {
+                        const response = await fetch(`${this.baseURL}/_api/v3/ws`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Basic ${this.credentials}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        return await response.json();
+                    }
+                };
+                
+                const workspaces = await testAPI.getWorkspaces();
+                addResult('✅ FaradayAPI JavaScript fonctionne !', 'success');
+                addResult(`📊 Workspaces via JS: ${workspaces.rows ? workspaces.rows.length : workspaces.length || 0}`, 'success');
+                
+            } catch (error) {
+                addResult(`❌ Erreur FaradayAPI JS: ${error.message}`, 'error');
+            }
+            
+            addResult('', 'info');
+            addResult('🎯 Tests terminés !', 'info');
+        }
+        
+        // Auto-test au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(testAPI, 1000);
+        });
+    </script>
+</body>
+</html>

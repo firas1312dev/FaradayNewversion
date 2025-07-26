@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion Immédiat - Faraday</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .test-box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .info { color: #17a2b8; font-weight: bold; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Test de Connexion Immédiat</h1>
+    
+    <div class="test-box">
+        <h2>Test Direct de l'API</h2>
+        <button onclick="testDirectAPI()">Test Direct</button>
+        <button onclick="testWithCORS()">Test avec CORS</button>
+        <button onclick="testAuthentication()">Test Auth</button>
+        <div id="direct-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Informations de Connexion</h2>
+        <p><strong>URL actuelle:</strong> <span id="current-url"></span></p>
+        <p><strong>URL API:</strong> http://localhost:5985/_api/v3</p>
+        <p><strong>Credentials:</strong> faraday:faraday</p>
+    </div>
+
+    <script>
+        // Afficher l'URL actuelle
+        document.getElementById('current-url').textContent = window.location.href;
+        
+        // Test direct de l'API
+        async function testDirectAPI() {
+            const result = document.getElementById('direct-result');
+            result.innerHTML = '<p class="info">🔄 Test en cours...</p>';
+            
+            try {
+                // Test simple sans authentification
+                const response = await fetch('http://localhost:5985/_api/v3/info', {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        <p class="success">✅ Connexion réussie!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `<p class="error">❌ Erreur HTTP: ${response.status} ${response.statusText}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Erreur: ${error.message}</p>`;
+            }
+        }
+        
+        // Test avec CORS explicite
+        async function testWithCORS() {
+            const result = document.getElementById('direct-result');
+            result.innerHTML = '<p class="info">🔄 Test CORS en cours...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5985/_api/v3/info', {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        <p class="success">✅ CORS OK!</p>
+                        <p>Headers: ${Array.from(response.headers.entries()).map(([k,v]) => k + ': ' + v).join(', ')}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `<p class="error">❌ CORS Erreur: ${response.status}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ CORS Failed: ${error.message}</p>`;
+            }
+        }
+        
+        // Test avec authentification
+        async function testAuthentication() {
+            const result = document.getElementById('direct-result');
+            result.innerHTML = '<p class="info">🔄 Test authentification en cours...</p>';
+            
+            const credentials = btoa('faraday:faraday');
+            
+            try {
+                const response = await fetch('http://localhost:5985/_api/v3/info', {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Authorization': `Basic ${credentials}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        <p class="success">✅ Authentification réussie!</p>
+                        <p><strong>Version:</strong> ${data.Version || 'N/A'}</p>
+                        <p><strong>Type:</strong> Données réelles du serveur Faraday</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `<p class="error">❌ Auth Failed: ${response.status} ${response.statusText}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Auth Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            console.log('🚀 Page de test chargée');
+            console.log('URL:', window.location.href);
+            console.log('Origin:', window.location.origin);
+        });
+    </script>
+</body>
+</html>

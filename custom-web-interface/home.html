@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faraday Interface - Accueil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
+
+        .nav-card .icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .nav-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .nav-card p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .nav-card .features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .nav-card .features li {
+            color: #4facfe;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .nav-card .features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .status-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: #f8f9fa;
+        }
+
+        .status-item .status-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .status-item h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .status-online {
+            background: linear-gradient(135deg, #c6f6d5 0%, #a8edea 100%);
+            color: #2f855a;
+        }
+
+        .status-offline {
+            background: linear-gradient(135deg, #fed7d7 0%, #fbb6ce 100%);
+            color: #c53030;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+
+        .workspace-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .workspace-primary:hover {
+            color: white;
+        }
+
+        .workspace-primary .icon,
+        .workspace-primary h3,
+        .workspace-primary p,
+        .workspace-primary .features li {
+            color: white;
+        }
+
+        .workspace-primary .features li::before {
+            color: #a8edea;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Faraday Interface</h1>
+            <p>Interface complète de gestion des données de sécurité</p>
+        </div>
+
+        <div class="status-section">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #2d3748;">État des Services</h2>
+            <div class="status-grid" id="statusGrid">
+                <div class="status-item status-offline">
+                    <div class="status-icon">⚡</div>
+                    <h4>Proxy CORS</h4>
+                    <p>Vérification...</p>
+                </div>
+                <div class="status-item status-offline">
+                    <div class="status-icon">🔒</div>
+                    <h4>Faraday Server</h4>
+                    <p>Vérification...</p>
+                </div>
+                <div class="status-item status-offline">
+                    <div class="status-icon">🌐</div>
+                    <h4>Interface Web</h4>
+                    <p>Vérification...</p>
+                </div>
+                <div class="status-item status-offline">
+                    <div class="status-icon">🔐</div>
+                    <h4>Authentification</h4>
+                    <p>Vérification...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-cards">
+            <a href="workspaces.html" class="nav-card workspace-primary">
+                <span class="icon">🏢</span>
+                <h3>Gestion des Workspaces</h3>
+                <p>Interface complète pour gérer vos espaces de travail</p>
+                <ul class="features">
+                    <li>Créer, modifier, supprimer des workspaces</li>
+                    <li>Visualiser les statistiques en temps réel</li>
+                    <li>Recherche et filtrage avancés</li>
+                    <li>Communication directe avec Faraday</li>
+                </ul>
+            </a>
+
+            <a href="index.html" class="nav-card">
+                <span class="icon">📊</span>
+                <h3>Dashboard Principal</h3>
+                <p>Vue d'ensemble de tous vos projets de sécurité</p>
+                <ul class="features">
+                    <li>Graphiques et analytics</li>
+                    <li>Module Graphics intégré</li>
+                    <li>Planificateur de tâches</li>
+                    <li>Rapports automatisés</li>
+                </ul>
+            </a>
+
+            <a href="diagnostic-connexion.html" class="nav-card">
+                <span class="icon">🔧</span>
+                <h3>Diagnostic Système</h3>
+                <p>Vérification complète de la connectivité</p>
+                <ul class="features">
+                    <li>Test de connectivité proxy</li>
+                    <li>Validation API Faraday</li>
+                    <li>Test d'authentification</li>
+                    <li>Logs détaillés</li>
+                </ul>
+            </a>
+
+            <a href="api-test.html" class="nav-card">
+                <span class="icon">🧪</span>
+                <h3>Tests API</h3>
+                <p>Interface de test pour l'API Faraday</p>
+                <ul class="features">
+                    <li>Test des endpoints API</li>
+                    <li>Simulation de requêtes</li>
+                    <li>Validation des réponses</li>
+                    <li>Debug interactif</li>
+                </ul>
+            </a>
+
+            <a href="#" onclick="openHostsManager()" class="nav-card">
+                <span class="icon">🖥️</span>
+                <h3>Gestion des Hosts</h3>
+                <p>Gestion complète des hôtes découverts</p>
+                <ul class="features">
+                    <li>Visualisation des hosts</li>
+                    <li>Gestion des services</li>
+                    <li>Édition des propriétés</li>
+                    <li>Export des données</li>
+                </ul>
+            </a>
+
+            <a href="#" onclick="openVulnsManager()" class="nav-card">
+                <span class="icon">🛡️</span>
+                <h3>Vulnérabilités</h3>
+                <p>Interface de gestion des vulnérabilités</p>
+                <ul class="features">
+                    <li>Catalogue des vulnérabilités</li>
+                    <li>Filtrage par criticité</li>
+                    <li>Gestion des corrections</li>
+                    <li>Rapports de sécurité</li>
+                </ul>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>🔗 Interface connectée aux données réelles Faraday</p>
+            <p>Version 1.0 - Développé pour la gestion avancée des tests de pénétration</p>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        class StatusChecker {
+            constructor() {
+                this.api = new FaradayAPI();
+                this.checkAllStatus();
+                
+                // Vérifier l'état toutes les 30 secondes
+                setInterval(() => this.checkAllStatus(), 30000);
+            }
+
+            async checkAllStatus() {
+                await Promise.all([
+                    this.checkProxyStatus(),
+                    this.checkFaradayStatus(),
+                    this.checkWebStatus(),
+                    this.checkAuthStatus()
+                ]);
+            }
+
+            async checkProxyStatus() {
+                const element = document.querySelector('.status-grid .status-item:nth-child(1)');
+                try {
+                    const response = await fetch('http://localhost:8082/_api/v3/info', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('faraday:faraday')
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        this.setStatus(element, true, 'Proxy CORS', 'En ligne');
+                    } else {
+                        this.setStatus(element, false, 'Proxy CORS', `Erreur ${response.status}`);
+                    }
+                } catch (error) {
+                    this.setStatus(element, false, 'Proxy CORS', 'Hors ligne');
+                }
+            }
+
+            async checkFaradayStatus() {
+                const element = document.querySelector('.status-grid .status-item:nth-child(2)');
+                try {
+                    // Test via proxy
+                    const response = await fetch('http://localhost:8082/_api/v3/info', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('faraday:faraday')
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.setStatus(element, true, 'Faraday Server', `v${data.Version || 'inconnue'}`);
+                    } else {
+                        this.setStatus(element, false, 'Faraday Server', 'Inaccessible');
+                    }
+                } catch (error) {
+                    this.setStatus(element, false, 'Faraday Server', 'Erreur');
+                }
+            }
+
+            async checkWebStatus() {
+                const element = document.querySelector('.status-grid .status-item:nth-child(3)');
+                const isOnPort8888 = window.location.port === '8888';
+                this.setStatus(element, isOnPort8888, 'Interface Web', 
+                    isOnPort8888 ? 'Port 8888' : `Port ${window.location.port || '80'}`);
+            }
+
+            async checkAuthStatus() {
+                const element = document.querySelector('.status-grid .status-item:nth-child(4)');
+                try {
+                    const response = await fetch('http://localhost:8082/_api/v3/info', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('faraday:faraday')
+                        }
+                    });
+                    
+                    this.setStatus(element, response.ok, 'Authentification', 
+                        response.ok ? 'Valide' : 'Échec');
+                } catch (error) {
+                    this.setStatus(element, false, 'Authentification', 'Erreur');
+                }
+            }
+
+            setStatus(element, isOnline, title, status) {
+                element.className = `status-item ${isOnline ? 'status-online' : 'status-offline'}`;
+                element.querySelector('h4').textContent = title;
+                element.querySelector('p').textContent = status;
+                element.querySelector('.status-icon').textContent = isOnline ? '✅' : '❌';
+            }
+        }
+
+        // Fonctions de navigation
+        function openTestAPI() {
+            // Pour l'instant, rediriger vers le diagnostic
+            window.open('diagnostic-connexion.html', '_blank');
+        }
+
+        function openHostsManager() {
+            alert('🚧 Module Hosts en cours de développement\n\nCette fonctionnalité sera bientôt disponible.');
+        }
+
+        function openVulnsManager() {
+            alert('🚧 Module Vulnérabilités en cours de développement\n\nCette fonctionnalité sera bientôt disponible.');
+        }
+
+        // Initialiser le vérificateur de statut
+        document.addEventListener('DOMContentLoaded', () => {
+            new StatusChecker();
+        });
+
+        // Messages de bienvenue
+        console.log(`
+🚀 FARADAY INTERFACE CHARGÉE
+
+🔗 Services disponibles:
+   • Workspaces: http://localhost:8888/workspaces.html
+   • Dashboard: http://localhost:8888/index.html
+   • Diagnostic: http://localhost:8888/diagnostic-connexion.html
+
+⚡ État de connexion:
+   • Interface Web: Port ${window.location.port || '80'}
+   • Proxy CORS: Port 8081
+   • Faraday API: Port 5985
+
+✨ Fonctionnalités:
+   • Gestion CRUD des workspaces
+   • Connexion directe aux données réelles
+   • Interface responsive et moderne
+   • Diagnostic automatique
+        `);
+    </script>
+</body>
+</html>

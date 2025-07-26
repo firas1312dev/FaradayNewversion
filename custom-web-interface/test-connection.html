@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Connexion Réelle Faraday</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .data {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test de Connexion Réelle aux Données Faraday</h1>
+        
+        <div class="status info">
+            <strong>Instructions :</strong><br>
+            1. Cliquez sur "Test Login" → doit afficher "✅ Connexion Réelle réussie!"<br>
+            2. Cliquez sur "Test Workspaces" → doit afficher les vrais workspaces<br>
+            3. Si vous voyez "(Mode Dev)" = mode simulation ❌<br>
+            4. Si vous voyez "Connexion Réelle" = vraies données ✅
+        </div>
+        
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="testWorkspaces()">Test Workspaces</button>
+        <button onclick="testInfo()">Test Info</button>
+        <button onclick="clearResults()">Effacer</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function testLogin() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="status info">🔄 Test de connexion en cours...</div>';
+            
+            try {
+                const result = await window.faradayAPI.login('faraday', 'faraday');
+                
+                let statusClass = result.mock ? 'warning' : 'success';
+                let connectionType = result.mock ? 'Simulée (Mode Dev)' : 'Réelle';
+                let emoji = result.mock ? '⚠️' : '✅';
+                
+                results.innerHTML = `
+                    <div class="status ${statusClass}">
+                        ${emoji} Connexion ${connectionType} réussie!<br>
+                        <strong>Utilisateur:</strong> ${result.user.username}<br>
+                        <strong>Version:</strong> ${result.version}<br>
+                        <strong>Mode:</strong> ${result.mode || 'Direct'}<br>
+                        <strong>Type:</strong> ${result.realConnection ? 'VRAIES DONNÉES' : 'DONNÉES SIMULÉES'}
+                    </div>
+                    ${result.serverData ? `<div class="data">Données serveur:\n${JSON.stringify(result.serverData, null, 2)}</div>` : ''}
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="status error">❌ Erreur: ${error.message}</div>`;
+            }
+        }
+        
+        async function testWorkspaces() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="status info">🔄 Récupération des workspaces...</div>';
+            
+            try {
+                const workspaces = await window.faradayAPI.getWorkspaces();
+                
+                results.innerHTML = `
+                    <div class="status success">
+                        ✅ Workspaces récupérés avec succès!<br>
+                        <strong>Nombre:</strong> ${workspaces.length}<br>
+                        <strong>Source:</strong> ${workspaces.length > 0 ? 'Serveur Faraday réel' : 'Possiblement simulé'}
+                    </div>
+                    <div class="data">Workspaces:\n${JSON.stringify(workspaces, null, 2)}</div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="status error">❌ Erreur workspaces: ${error.message}</div>`;
+            }
+        }
+        
+        async function testInfo() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="status info">🔄 Test endpoint info...</div>';
+            
+            try {
+                const info = await window.faradayAPI.get('info');
+                
+                const isReal = info.Version && !info.Version.includes('Mock');
+                
+                results.innerHTML = `
+                    <div class="status ${isReal ? 'success' : 'warning'}">
+                        ${isReal ? '✅' : '⚠️'} Info récupérées - ${isReal ? 'DONNÉES RÉELLES' : 'DONNÉES SIMULÉES'}<br>
+                        <strong>Version:</strong> ${info.Version || 'Non disponible'}<br>
+                        <strong>Serveur:</strong> ${info['Faraday Server'] || 'Non disponible'}
+                    </div>
+                    <div class="data">Réponse complète:\n${JSON.stringify(info, null, 2)}</div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="status error">❌ Erreur info: ${error.message}</div>`;
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Message d'information initial
+        console.log('🔍 Page de test chargée');
+        console.log('📍 URL:', window.location.href);
+        console.log('🔗 API disponible:', !!window.faradayAPI);
+    </script>
+</body>
+</html>

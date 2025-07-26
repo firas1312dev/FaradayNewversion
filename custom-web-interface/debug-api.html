@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug API Faraday</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐛 Debug API Faraday</h1>
+        <p>Cette page teste chaque étape de la connexion API pour identifier où se produit l'erreur.</p>
+        
+        <div>
+            <button onclick="runCompleteDebug()">🔍 Debug Complet</button>
+            <button onclick="testBasicProxy()">🌐 Test Proxy Basique</button>
+            <button onclick="testLogin()">🔑 Test Login</button>
+            <button onclick="clearResults()">🧹 Effacer</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info', isStep = false) {
+            const div = document.createElement('div');
+            div.className = isStep ? 'step' : `result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        async function testBasicProxy() {
+            addResult('🔍 ÉTAPE 1: Test du proxy basique', 'info', true);
+            
+            try {
+                // Test direct du proxy avec fetch brut
+                const response = await fetch('http://localhost:8082/_api/v3/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                addResult(`✅ Proxy réponse status: ${response.status}`, 'success');
+                addResult(`✅ Proxy content-type: ${response.headers.get('content-type')}`, 'success');
+                
+                const text = await response.text();
+                addResult(`📄 Proxy réponse brute (${text.length} chars):<br><pre>${text.substring(0, 500)}${text.length > 500 ? '...' : ''}</pre>`, 'info');
+                
+                // Essayer de parser en JSON
+                try {
+                    const json = JSON.parse(text);
+                    addResult(`✅ JSON parsing réussi:`, 'success');
+                    addResult(`<pre>${JSON.stringify(json, null, 2)}</pre>`, 'success');
+                } catch (jsonError) {
+                    addResult(`❌ Erreur JSON parsing: ${jsonError.message}`, 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Erreur proxy basique: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            addResult('🔍 ÉTAPE 2: Test du login API', 'info', true);
+            
+            try {
+                addResult(`🔧 Configuration API:`, 'info');
+                addResult(`- baseURL: ${window.faradayAPI.baseURL}`, 'info');
+                addResult(`- usingProxy: ${window.faradayAPI.isUsingProxy}`, 'info');
+                addResult(`- currentPort: ${window.location.port}`, 'info');
+                
+                // Test de l'endpoint info via l'API
+                addResult('🌐 Test endpoint info via API...', 'info');
+                
+                window.faradayAPI.credentials = btoa('faraday:faraday');
+                const infoResponse = await window.faradayAPI.get('info');
+                
+                addResult(`✅ Endpoint info réussi:`, 'success');
+                addResult(`<pre>${JSON.stringify(infoResponse, null, 2)}</pre>`, 'success');
+                
+                // Test de login complet
+                addResult('🔑 Test login complet...', 'info');
+                const loginResult = await window.faradayAPI.login('faraday', 'faraday');
+                
+                addResult(`✅ Login réussi:`, 'success');
+                addResult(`<pre>${JSON.stringify(loginResult, null, 2)}</pre>`, 'success');
+                
+            } catch (error) {
+                addResult(`❌ Erreur login: ${error.message}`, 'error');
+                addResult(`📍 Stack: ${error.stack}`, 'error');
+            }
+        }
+        
+        async function testWorkspaces() {
+            addResult('🔍 ÉTAPE 3: Test workspaces', 'info', true);
+            
+            try {
+                const workspaces = await window.faradayAPI.getWorkspaces();
+                addResult(`✅ Workspaces récupérés (${workspaces.rows ? workspaces.rows.length : workspaces.length} trouvé(s)):`, 'success');
+                addResult(`<pre>${JSON.stringify(workspaces, null, 2)}</pre>`, 'success');
+                
+                if (workspaces.rows && workspaces.rows.length > 0) {
+                    const firstWs = workspaces.rows[0];
+                    addResult(`🎯 Test avec workspace: ${firstWs.name}`, 'info');
+                    
+                    // Test des hosts
+                    try {
+                        const hosts = await window.faradayAPI.getHosts(firstWs.name);
+                        addResult(`✅ Hosts récupérés pour ${firstWs.name}: ${hosts.length || 0}`, 'success');
+                    } catch (hostError) {
+                        addResult(`❌ Erreur hosts: ${hostError.message}`, 'error');
+                    }
+                }
+                
+            } catch (error) {
+                addResult(`❌ Erreur workspaces: ${error.message}`, 'error');
+                
+                // Analyser le type d'erreur
+                if (error.message.includes('Unexpected token')) {
+                    addResult(`💡 Erreur de parsing JSON - le serveur retourne probablement du HTML`, 'error');
+                }
+            }
+        }
+        
+        async function runCompleteDebug() {
+            clearResults();
+            addResult('🚀 DÉBUT DU DEBUG COMPLET', 'info', true);
+            
+            await testBasicProxy();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testLogin();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testWorkspaces();
+            
+            addResult('🏁 DEBUG TERMINÉ', 'info', true);
+        }
+        
+        // Auto-exécution après chargement
+        window.onload = function() {
+            addResult('🔄 Page chargée, démarrage auto...', 'info');
+            setTimeout(runCompleteDebug, 1000);
+        };
+    </script>
+</body>
+</html>

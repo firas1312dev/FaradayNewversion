@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion Faraday</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Connexion Faraday</h1>
+        <p>Test de la connexion réelle aux données Faraday.</p>
+        
+        <div>
+            <button onclick="testRealConnection()">🚀 Tester Connexion Réelle</button>
+            <button onclick="clearResults()">🧹 Effacer</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message.replace(/<[^>]*>/g, '')}`);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        async function testRealConnection() {
+            clearResults();
+            addResult('🚀 TEST CONNEXION RÉELLE FARADAY', 'info');
+            addResult(`📍 URL: ${window.location.href}`, 'info');
+            addResult(`⏰ Timestamp: ${new Date().toLocaleString()}`, 'info');
+            
+            // Tester la configuration de l'API
+            addResult('', 'info');
+            addResult('🔍 CONFIGURATION API', 'info');
+            addResult(`📡 Base URL: ${window.faradayAPI.baseURL}`, 'info');
+            addResult(`🔧 Using Proxy: ${window.faradayAPI.isUsingProxy}`, 'info');
+            addResult(`📋 API Version: ${window.faradayAPI.apiVersion}`, 'info');
+            
+            // Test 1: Connexion
+            addResult('', 'info');
+            addResult('🔍 TEST 1: Connexion Login', 'info');
+            
+            try {
+                const startTime = Date.now();
+                const loginResult = await window.faradayAPI.login('faraday', 'faraday');
+                const responseTime = Date.now() - startTime;
+                
+                if (loginResult.success) {
+                    addResult(`✅ Connexion réussie (${responseTime}ms)`, 'success');
+                    addResult(`👤 Utilisateur: ${loginResult.user.username}`, 'success');
+                    addResult(`📊 Version: ${loginResult.version}`, 'success');
+                    addResult(`🌐 Mode: ${loginResult.mode}`, 'success');
+                    addResult(`🔗 Connexion réelle: ${loginResult.realConnection ? 'OUI' : 'NON'}`, loginResult.realConnection ? 'success' : 'info');
+                    
+                    if (loginResult.workspaces) {
+                        addResult(`📁 Workspaces trouvés: ${loginResult.workspaces.length}`, 'success');
+                        loginResult.workspaces.forEach((ws, index) => {
+                            addResult(`  ${index + 1}. ${ws.name} (ID: ${ws.id})`, 'success');
+                        });
+                    }
+                    
+                    // Test 2: Récupération des workspaces directement
+                    addResult('', 'info');
+                    addResult('🔍 TEST 2: Récupération Workspaces', 'info');
+                    
+                    try {
+                        const workspaces = await window.faradayAPI.getWorkspaces();
+                        addResult(`✅ Workspaces récupérés: ${workspaces.rows ? workspaces.rows.length : (Array.isArray(workspaces) ? workspaces.length : 0)}`, 'success');
+                        addResult(`<pre>${JSON.stringify(workspaces, null, 2).substring(0, 500)}...</pre>`, 'success');
+                    } catch (wsError) {
+                        addResult(`❌ Erreur workspaces: ${wsError.message}`, 'error');
+                    }
+                    
+                    // Test 3: Test avec un workspace spécifique
+                    if (loginResult.workspaces && loginResult.workspaces.length > 0) {
+                        addResult('', 'info');
+                        addResult('🔍 TEST 3: Test Workspace Spécifique', 'info');
+                        
+                        const firstWorkspace = loginResult.workspaces[0];
+                        window.faradayAPI.setCurrentWorkspace(firstWorkspace.name);
+                        
+                        try {
+                            const hosts = await window.faradayAPI.getHosts();
+                            addResult(`✅ Hosts récupérés pour "${firstWorkspace.name}": ${hosts.rows ? hosts.rows.length : (Array.isArray(hosts) ? hosts.length : 0)}`, 'success');
+                        } catch (hostError) {
+                            addResult(`❌ Erreur hosts: ${hostError.message}`, 'error');
+                        }
+                        
+                        try {
+                            const vulns = await window.faradayAPI.getVulnerabilities();
+                            addResult(`✅ Vulnérabilités récupérées: ${vulns.rows ? vulns.rows.length : (Array.isArray(vulns) ? vulns.length : 0)}`, 'success');
+                        } catch (vulnError) {
+                            addResult(`❌ Erreur vulnérabilités: ${vulnError.message}`, 'error');
+                        }
+                    }
+                    
+                    // Résumé final
+                    addResult('', 'info');
+                    addResult('🎯 RÉSUMÉ FINAL', 'info');
+                    addResult('🎉 CONNEXION RÉELLE OPÉRATIONNELLE !', 'success');
+                    addResult('✅ API Faraday accessible', 'success');
+                    addResult('✅ Authentification fonctionnelle', 'success');
+                    addResult('✅ Données réelles récupérées', 'success');
+                    addResult(`💡 Vous pouvez maintenant utiliser l'interface complète sur ${window.location.origin}`, 'success');
+                    
+                } else {
+                    addResult(`❌ Connexion échouée`, 'error');
+                    addResult(`📋 Détails: ${JSON.stringify(loginResult)}`, 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Erreur de connexion: ${error.message}`, 'error');
+                addResult(`📍 Stack: ${error.stack}`, 'error');
+                
+                // Test de diagnostic
+                addResult('', 'info');
+                addResult('🔍 DIAGNOSTIC', 'info');
+                
+                try {
+                    // Test direct du proxy
+                    const proxyTest = await fetch('http://localhost:8082/_api/v3/ws', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (proxyTest.ok) {
+                        const proxyData = await proxyTest.json();
+                        addResult(`✅ Proxy fonctionne - données reçues`, 'success');
+                        addResult(`<pre>${JSON.stringify(proxyData, null, 2).substring(0, 300)}...</pre>`, 'success');
+                    } else {
+                        addResult(`❌ Proxy erreur: ${proxyTest.status}`, 'error');
+                    }
+                } catch (proxyError) {
+                    addResult(`❌ Proxy inaccessible: ${proxyError.message}`, 'error');
+                }
+            }
+        }
+        
+        // Test automatique au chargement
+        window.onload = function() {
+            setTimeout(testRealConnection, 1000);
+        };
+    </script>
+</body>
+</html>

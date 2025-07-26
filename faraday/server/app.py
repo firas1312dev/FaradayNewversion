@@ -104,7 +104,7 @@ def setup_storage_path():
 
 def register_blueprints(app):
     from faraday.server.ui import ui  # pylint: disable=import-outside-toplevel
-    from faraday.server.api.modules.info import info_api  # pylint:disable=import-outside-toplevel
+    from faraday.server.api.modules.info import info_api  # pylint:disable=import-outside-toplev
     from faraday.server.api.modules.commandsrun import commandsrun_api  # pylint:disable=import-outside-toplevel
     from faraday.server.api.modules.global_commands import globalcommands_api  # pylint:disable=import-outside-toplevel
     from faraday.server.api.modules.activity_feed import activityfeed_api  # pylint:disable=import-outside-toplevel
@@ -629,6 +629,7 @@ def get_debouncer():
 
 def register_extensions(app):
     from faraday.server.websockets.dispatcher import DispatcherNamespace  # pylint: disable=import-outside-toplevel
+    
     socketio.init_app(app, ping_interval=faraday_server.socketio_ping_interval,
                       ping_timeout=faraday_server.socketio_ping_timeout,
                       logger=faraday_server.socketio_logger)

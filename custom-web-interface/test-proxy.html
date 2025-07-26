@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Proxy CORS - Faraday</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; background: #e8f5e8; padding: 10px; margin: 10px 0; }
+        .error { color: red; background: #ffe8e8; padding: 10px; margin: 10px 0; }
+        .info { color: blue; background: #e8f0ff; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+        pre { background: #f5f5f5; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Test Proxy CORS Faraday</h1>
+    
+    <div class="info">
+        <strong>Configuration :</strong><br>
+        Frontend: http://localhost:8888<br>
+        Proxy CORS: http://localhost:8086<br>
+        API Faraday: http://localhost:5985
+    </div>
+    
+    <button onclick="testProxyHealth()">Test Proxy Health</button>
+    <button onclick="testFaradayInfo()">Test API Info</button>
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="clearResults()">Effacer</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testProxyHealth() {
+            const results = document.getElementById('results');
+            results.innerHTML += '<div class="info">🔄 Test de santé du proxy...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8086/health', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                const data = await response.json();
+                results.innerHTML += `<div class="success">✅ Proxy Health OK: ${data.status} (Port: ${data.port})</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="error">❌ Proxy Health Failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testFaradayInfo() {
+            const results = document.getElementById('results');
+            results.innerHTML += '<div class="info">🔄 Test API Faraday Info...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:8086/_api/v3/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                results.innerHTML += `<div class="success">✅ API Info OK: Version ${data.Version}</div>`;
+                results.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML += `<div class="error">❌ API Info Failed: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLogin() {
+            const results = document.getElementById('results');
+            results.innerHTML += '<div class="info">🔄 Test de connexion complète...</div>';
+            
+            try {
+                // Simuler la connexion avec l'API modifiée
+                window.tempAPI = new FaradayAPI();
+                const loginResult = await window.tempAPI.login('faraday', 'faraday');
+                
+                if (loginResult.success) {
+                    const connectionType = loginResult.mock ? 'Simulée' : 'Réelle';
+                    results.innerHTML += `<div class="success">✅ Connexion ${connectionType} réussie!</div>`;
+                    results.innerHTML += `<pre>${JSON.stringify(loginResult, null, 2)}</pre>`;
+                } else {
+                    results.innerHTML += `<div class="error">❌ Connexion échouée</div>`;
+                }
+            } catch (error) {
+                results.innerHTML += `<div class="error">❌ Erreur de connexion: ${error.message}</div>`;
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Test automatique au chargement
+        window.addEventListener('load', function() {
+            console.log('Page de test chargée');
+            console.log('URL:', window.location.href);
+            console.log('Port:', window.location.port);
+        });
+    </script>
+    
+    <!-- Charger l'API Faraday pour les tests -->
+    <script src="js/api.js"></script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Proxy CORS - Faraday</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .status.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #5a6fd8; }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        .test-card h3 {
+            margin-top: 0;
+            color: #444;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .config-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Proxy CORS - Connexion Réelle Faraday</h1>
+        
+        <div class="config-info">
+            <h3>📋 Configuration Détectée</h3>
+            <div id="config-details">Chargement...</div>
+        </div>
+        
+        <div class="test-grid">
+            <!-- Test de Connexion -->
+            <div class="test-card">
+                <h3>🔌 Test de Connexion</h3>
+                <button onclick="testConnection()">Tester Connexion</button>
+                <div id="connection-result"></div>
+            </div>
+            
+            <!-- Test Login -->
+            <div class="test-card">
+                <h3>🔐 Test Login</h3>
+                <button onclick="testLogin()">Test Login</button>
+                <div id="login-result"></div>
+            </div>
+        </div>
+        
+        <!-- Test Complet -->
+        <div class="test-card">
+            <h3>🚀 Validation Complète</h3>
+            <button onclick="runFullTest()">Exécuter Test Complet</button>
+            <div id="full-test-result"></div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Configuration et diagnostic
+        function updateConfigDetails() {
+            const configDiv = document.getElementById('config-details');
+            const currentURL = window.location.href;
+            const currentPort = window.location.port;
+            const apiBaseURL = window.faradayAPI ? window.faradayAPI.baseURL : 'Non initialisé';
+            const isUsingProxy = window.faradayAPI ? window.faradayAPI.isUsingProxy : false;
+            
+            configDiv.innerHTML = `
+                <strong>URL Actuelle:</strong> ${currentURL}<br>
+                <strong>Port Interface:</strong> ${currentPort}<br>
+                <strong>API Base URL:</strong> ${apiBaseURL}<br>
+                <strong>Mode Proxy:</strong> ${isUsingProxy ? 'Activé ✅' : 'Désactivé ❌'}<br>
+                <strong>Recommandation:</strong> ${currentPort === '8888' ? 'Configuration correcte ✅' : 'Utilisez le port 8888 ⚠️'}
+            `;
+        }
+        
+        // Test de connexion basique
+        async function testConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.innerHTML = '<div class="status info">🔄 Test en cours...</div>';
+            
+            try {
+                const response = await fetch(window.faradayAPI.baseURL + '/' + window.faradayAPI.apiVersion + '/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="status success">
+                            ✅ Connexion réussie!<br>
+                            Status: ${response.status}<br>
+                            Version: ${data.Version || 'N/A'}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="status error">
+                            ❌ Erreur HTTP: ${response.status}<br>
+                            ${response.statusText}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ Erreur de connexion:<br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // Test de login
+        async function testLogin() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.innerHTML = '<div class="status info">🔄 Test login...</div>';
+            
+            try {
+                const result = await window.faradayAPI.login('faraday', 'faraday');
+                
+                if (result.success) {
+                    const connectionType = result.mock ? 'Simulée' : 'Réelle';
+                    const statusClass = result.mock ? 'warning' : 'success';
+                    
+                    resultDiv.innerHTML = `
+                        <div class="status ${statusClass}">
+                            ✅ Login ${connectionType} réussi!<br>
+                            Utilisateur: ${result.user.username}<br>
+                            Version: ${result.version}<br>
+                            Mode: ${result.mode || (result.mock ? 'Développement' : 'Production')}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="status error">❌ Login échoué</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ Erreur login:<br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        // Test complet
+        async function runFullTest() {
+            const resultDiv = document.getElementById('full-test-result');
+            resultDiv.innerHTML = '<div class="status info">🔄 Exécution du test complet...</div>';
+            
+            const tests = [];
+            
+            // Test 1: Connexion
+            try {
+                const response = await fetch(window.faradayAPI.baseURL + '/' + window.faradayAPI.apiVersion + '/info');
+                tests.push({ name: 'Connexion', success: response.ok, details: `Status: ${response.status}` });
+            } catch (error) {
+                tests.push({ name: 'Connexion', success: false, details: error.message });
+            }
+            
+            // Test 2: Login
+            try {
+                const loginResult = await window.faradayAPI.login('faraday', 'faraday');
+                tests.push({ 
+                    name: 'Login', 
+                    success: loginResult.success, 
+                    details: loginResult.mock ? 'Mode simulé' : 'Connexion réelle',
+                    isReal: !loginResult.mock
+                });
+            } catch (error) {
+                tests.push({ name: 'Login', success: false, details: error.message, isReal: false });
+            }
+            
+            // Analyse des résultats
+            const successCount = tests.filter(t => t.success).length;
+            const realDataCount = tests.filter(t => t.isReal).length;
+            const totalTests = tests.length;
+            
+            let overallStatus = 'error';
+            let overallMessage = '';
+            
+            if (successCount === totalTests && realDataCount >= 1) {
+                overallStatus = 'success';
+                overallMessage = '🎉 CONNEXION RÉELLE CONFIRMÉE!';
+            } else if (successCount === totalTests && realDataCount === 0) {
+                overallStatus = 'warning';
+                overallMessage = '⚠️ MODE SIMULATION ACTIF';
+            } else if (successCount > 0) {
+                overallStatus = 'info';
+                overallMessage = '🔄 CONNEXION PARTIELLE';
+            } else {
+                overallStatus = 'error';
+                overallMessage = '❌ ÉCHEC DE CONNEXION';
+            }
+            
+            const testResults = tests.map(test => 
+                `${test.success ? '✅' : '❌'} ${test.name}: ${test.details} ${test.isReal ? '(Réel)' : ''}`
+            ).join('<br>');
+            
+            resultDiv.innerHTML = `
+                <div class="status ${overallStatus}">
+                    <strong>${overallMessage}</strong><br><br>
+                    ${testResults}<br><br>
+                    <strong>Résumé:</strong><br>
+                    Tests réussis: ${successCount}/${totalTests}<br>
+                    Données réelles: ${realDataCount}/${totalTests}<br>
+                    État: ${realDataCount >= 1 ? 'CONNEXION RÉELLE' : 'SIMULATION'}
+                </div>
+            `;
+        }
+        
+        // Initialisation
+        window.addEventListener('load', function() {
+            console.log('🔧 Page de test proxy chargée');
+            updateConfigDetails();
+            
+            // Test automatique de connexion
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html>

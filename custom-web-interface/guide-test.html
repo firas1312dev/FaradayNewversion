@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Guide de Test - Interface Faraday</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .content {
+            padding: 30px;
+        }
+        .test-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        .test-card:hover {
+            border-color: #4facfe;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.2);
+        }
+        .test-card h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .test-card p {
+            color: #4a5568;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-recommended {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-advanced {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-debug {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .steps {
+            background: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .steps h4 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+        .steps ol {
+            padding-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 10px;
+            color: #2d5016;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Guide de Test Complet</h1>
+            <p>Interface Faraday avec Données Réelles</p>
+        </div>
+        
+        <div class="content">
+            <div class="steps">
+                <h4>📋 Ordre de Test Recommandé</h4>
+                <ol>
+                    <li><strong>Test de Base :</strong> Vérifier la connectivité API</li>
+                    <li><strong>Interface Simple :</strong> Test des fonctions de base</li>
+                    <li><strong>Interface Complète :</strong> Test de l'interface finale</li>
+                    <li><strong>Debug :</strong> Si problèmes, utiliser les outils de debug</li>
+                </ol>
+            </div>
+
+            <div class="test-card">
+                <h3>🎯 1. Test de Connectivité API</h3>
+                <span class="status status-recommended">Recommandé - Commencer ici</span>
+                <p>Test simple pour vérifier que l'API Faraday répond correctement via le proxy CORS.</p>
+                <a href="test-final.html" class="btn" target="_blank">🧪 Test Final</a>
+                <a href="test-8082.html" class="btn btn-secondary" target="_blank">🔧 Test Port 8082</a>
+            </div>
+
+            <div class="test-card">
+                <h3>🚀 2. Interface Faraday Complète</h3>
+                <span class="status status-recommended">Interface Principale</span>
+                <p>Interface complète avec gestion des workspaces, statistiques en temps réel, et design moderne.</p>
+                <a href="interface-faraday-final.html" class="btn btn-success" target="_blank">🎨 Interface Complète</a>
+                <a href="workspaces-clean-final.html" class="btn btn-secondary" target="_blank">🧹 Version Clean</a>
+            </div>
+
+            <div class="test-card">
+                <h3>⚙️ 3. Tests de Debug</h3>
+                <span class="status status-debug">Pour Debugging</span>
+                <p>Outils de diagnostic pour résoudre les problèmes de connexion ou de CORS.</p>
+                <a href="test-port-8082.html" class="btn" target="_blank">🔍 Test Diagnostic</a>
+                <a href="workspaces.html" class="btn btn-secondary" target="_blank">📋 Version Basique</a>
+            </div>
+
+            <div class="steps">
+                <h4>✅ Que Vérifier Dans Chaque Test</h4>
+                <ol>
+                    <li><strong>Indicateur de Connexion :</strong> Doit être vert (✅)</li>
+                    <li><strong>Chargement des Workspaces :</strong> Doit afficher vos workspaces réels</li>
+                    <li><strong>Statistiques :</strong> Hosts, services, vulnérabilités</li>
+                    <li><strong>Pas d'Erreurs CORS :</strong> Console navigateur sans erreurs</li>
+                    <li><strong>Actualisation :</strong> Bouton "Actualiser" fonctionne</li>
+                </ol>
+            </div>
+
+            <div class="test-card">
+                <h3>🐛 En Cas de Problème</h3>
+                <span class="status status-advanced">Debugging Avancé</span>
+                <p>Si vous rencontrez des erreurs, voici les étapes de debugging :</p>
+                <div style="margin-top: 15px;">
+                    <ol>
+                        <li>Ouvrir la <strong>Console du Navigateur</strong> (F12)</li>
+                        <li>Vérifier les <strong>erreurs CORS</strong> dans l'onglet Console</li>
+                        <li>Regarder les <strong>requêtes réseau</strong> dans l'onglet Network</li>
+                        <li>Tester avec <strong>test-final.html</strong> d'abord</li>
+                        <li>Vider le <strong>cache du navigateur</strong> (Ctrl+F5)</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e9ecef;">
+                <p style="color: #6c757d; font-size: 0.9em;">
+                    💡 <strong>Conseil :</strong> Commencez par "Test Final" pour vérifier la connectivité, 
+                    puis passez à "Interface Complète" pour l'utilisation normale.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

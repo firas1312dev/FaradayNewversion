@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Faraday - CORS Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .warning { color: #ffc107; font-weight: bold; }
+        .info { color: #17a2b8; font-weight: bold; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; border: none; border-radius: 4px; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: black; }
+        .result { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #007bff; }
+        .credentials { background: #e9ecef; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .log { font-family: monospace; font-size: 12px; background: #f8f9fa; padding: 10px; border-radius: 4px; margin: 5px 0; max-height: 200px; overflow-y: auto; }
+        h1 { color: #495057; }
+        h2 { color: #6c757d; border-bottom: 2px solid #dee2e6; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test API Faraday - Résolution CORS</h1>
+        
+        <div class="credentials">
+            <strong>📋 Credentials de test:</strong><br>
+            • Username: <code>faraday</code><br>
+            • Password: <code>faraday</code><br>
+            • Server: <code>http://localhost:5985</code>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 1. Test Connectivité Serveur</h2>
+            <button class="btn-primary" onclick="testServerConnection()">Tester Connexion Serveur</button>
+            <div id="server-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔑 2. Test Authentification API</h2>
+            <button class="btn-primary" onclick="testAPIAuth()">Tester Auth API</button>
+            <button class="btn-warning" onclick="testMockAuth()">Mode Simulé</button>
+            <div id="auth-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 3. Test Endpoints Faraday</h2>
+            <button class="btn-success" onclick="testInfo()">Test /info</button>
+            <button class="btn-success" onclick="testWorkspaces()">Test /ws</button>
+            <button class="btn-success" onclick="testHosts()">Test /hosts</button>
+            <div id="endpoints-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 4. Solutions CORS</h2>
+            <button class="btn-warning" onclick="showCORSSolutions()">Afficher Solutions</button>
+            <div id="cors-solutions" class="result" style="display: none;">
+                <h3>Solutions pour résoudre les erreurs CORS :</h3>
+                <ol>
+                    <li><strong>Serveur HTTP Local :</strong> <code>python -m http.server 8080</code></li>
+                    <li><strong>Chrome avec CORS désactivé :</strong> <code>--disable-web-security --user-data-dir="C:/temp/chrome"</code></li>
+                    <li><strong>Firefox avec CORS désactivé :</strong> about:config → <code>security.fileuri.strict_origin_policy = false</code></li>
+                    <li><strong>Extension CORS :</strong> Installer "CORS Unblock" ou similaire</li>
+                    <li><strong>Mode développement :</strong> Utiliser les données simulées</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 5. Logs de Debug</h2>
+            <button class="btn-primary" onclick="clearLogs()">Effacer Logs</button>
+            <div id="debug-logs" class="log">Aucun log pour le moment...</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration API
+        const API_CONFIG = {
+            baseURL: 'http://localhost:5985',
+            apiVersion: '_api/v3',
+            username: 'faraday',
+            password: 'faraday',
+            credentials: btoa('faraday:faraday')
+        };
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('debug-logs');
+            const colorClass = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+            logDiv.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearLogs() {
+            document.getElementById('debug-logs').innerHTML = 'Logs effacés...<br>';
+        }
+
+        async function testServerConnection() {
+            const resultDiv = document.getElementById('server-result');
+            resultDiv.innerHTML = '⏳ Test de connexion en cours...';
+            log('Début test connexion serveur', 'info');
+
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}`, {
+                    method: 'GET',
+                    mode: 'no-cors'  // Mode no-cors pour éviter les erreurs CORS
+                });
+                
+                resultDiv.innerHTML = '<span class="success">✅ Serveur accessible</span><br>Mode: no-cors (réponse opaque)';
+                log('Serveur accessible via no-cors', 'success');
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Serveur inaccessible</span><br>Erreur: ${error.message}`;
+                log(`Erreur serveur: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAPIAuth() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '⏳ Test authentification en cours...';
+            log('Début test authentification API', 'info');
+
+            const testStrategies = [
+                {
+                    name: 'CORS Standard',
+                    config: {
+                        mode: 'cors',
+                        credentials: 'omit',
+                        headers: {
+                            'Authorization': `Basic ${API_CONFIG.credentials}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                },
+                {
+                    name: 'CORS avec credentials',
+                    config: {
+                        mode: 'cors',
+                        credentials: 'include',
+                        headers: {
+                            'Authorization': `Basic ${API_CONFIG.credentials}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                },
+                {
+                    name: 'No-CORS',
+                    config: {
+                        mode: 'no-cors',
+                        headers: {
+                            'Authorization': `Basic ${API_CONFIG.credentials}`
+                        }
+                    }
+                }
+            ];
+
+            let success = false;
+            let results = [];
+
+            for (let strategy of testStrategies) {
+                try {
+                    log(`Test stratégie: ${strategy.name}`, 'info');
+                    const response = await fetch(`${API_CONFIG.baseURL}/${API_CONFIG.apiVersion}/info`, {
+                        method: 'GET',
+                        ...strategy.config
+                    });
+
+                    if (strategy.name === 'No-CORS') {
+                        results.push(`${strategy.name}: ✅ Requête envoyée (réponse opaque)`);
+                        log(`${strategy.name}: Requête no-cors envoyée`, 'success');
+                    } else if (response.ok) {
+                        const data = await response.json();
+                        results.push(`${strategy.name}: ✅ Succès - Version ${data.Version || data['Faraday Server']}`);
+                        success = true;
+                        log(`${strategy.name}: Succès - ${JSON.stringify(data)}`, 'success');
+                        break;
+                    } else {
+                        results.push(`${strategy.name}: ❌ HTTP ${response.status}`);
+                        log(`${strategy.name}: HTTP ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    results.push(`${strategy.name}: ❌ ${error.message}`);
+                    log(`${strategy.name}: ${error.message}`, 'error');
+                }
+            }
+
+            if (success) {
+                resultDiv.innerHTML = `<span class="success">✅ Authentification réussie!</span><br>${results.join('<br>')}`;
+            } else {
+                resultDiv.innerHTML = `<span class="error">❌ Échec authentification</span><br>${results.join('<br>')}<br><br><span class="warning">💡 Essayez le mode simulé ou configurez CORS</span>`;
+            }
+        }
+
+        async function testMockAuth() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '⏳ Test mode simulé...';
+            log('Test mode simulé', 'info');
+
+            // Simuler une authentification réussie
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <span class="success">✅ Mode simulé activé!</span><br>
+                    <strong>Utilisateur:</strong> ${API_CONFIG.username}<br>
+                    <strong>Version:</strong> 5.14.1 (Simulé)<br>
+                    <span class="info">ℹ️ Les données seront simulées pour le développement</span>
+                `;
+                log('Mode simulé activé avec succès', 'success');
+            }, 1000);
+        }
+
+        async function testInfo() {
+            await testEndpoint('info', 'Info Serveur');
+        }
+
+        async function testWorkspaces() {
+            await testEndpoint('ws', 'Workspaces');
+        }
+
+        async function testHosts() {
+            await testEndpoint('ws/demo-workspace/hosts', 'Hosts', true);
+        }
+
+        async function testEndpoint(endpoint, name, mockFallback = false) {
+            const resultDiv = document.getElementById('endpoints-result');
+            const url = `${API_CONFIG.baseURL}/${API_CONFIG.apiVersion}/${endpoint}`;
+            
+            log(`Test endpoint: ${name} (${endpoint})`, 'info');
+            resultDiv.innerHTML += `<div>⏳ Test ${name}...</div>`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML += `<div class="success">✅ ${name}: ${JSON.stringify(data).substring(0, 100)}...</div>`;
+                    log(`${name}: Succès - ${JSON.stringify(data).substring(0, 200)}`, 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                log(`${name}: Erreur - ${error.message}`, 'error');
+                
+                if (mockFallback) {
+                    // Utiliser des données simulées
+                    const mockData = getMockData(endpoint);
+                    resultDiv.innerHTML += `<div class="warning">⚠️ ${name}: Mode simulé - ${JSON.stringify(mockData).substring(0, 100)}...</div>`;
+                    log(`${name}: Fallback vers données simulées`, 'warning');
+                } else {
+                    resultDiv.innerHTML += `<div class="error">❌ ${name}: ${error.message}</div>`;
+                }
+            }
+        }
+
+        function getMockData(endpoint) {
+            const mockData = {
+                'info': { 'Faraday Server': 'Running', 'Version': '5.14.1' },
+                'ws': [
+                    { name: 'demo-workspace', description: 'Demo workspace' },
+                    { name: 'test-workspace', description: 'Test workspace' }
+                ],
+                'ws/demo-workspace/hosts': [
+                    { ip: '192.168.1.1', hostnames: ['router'], os: 'Linux' },
+                    { ip: '192.168.1.100', hostnames: ['pc'], os: 'Windows' }
+                ]
+            };
+            return mockData[endpoint] || { message: 'Mock data' };
+        }
+
+        function showCORSSolutions() {
+            const solutionsDiv = document.getElementById('cors-solutions');
+            solutionsDiv.style.display = solutionsDiv.style.display === 'none' ? 'block' : 'none';
+            log('Affichage des solutions CORS', 'info');
+        }
+
+        // Auto-test au chargement
+        window.addEventListener('load', () => {
+            log('Page de test API chargée', 'info');
+            setTimeout(() => {
+                testServerConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

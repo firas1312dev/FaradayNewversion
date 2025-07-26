@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Interface Faraday - Workspaces Réels</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header .logo-faraday {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header .logo-f {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .header .logo-text {
+            font-size: 42px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .toolbar {
+            padding: 25px 40px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        .workspace-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2d3748;
+            font-size: 1.5em;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            background: none;
+            border: none;
+        }
+
+        .close:hover {
+            color: #dc3545;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .workspaces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .workspace-card {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workspace-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #4facfe;
+        }
+
+        .workspace-card.active {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .workspace-card.inactive {
+            border-color: #dc3545;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .workspace-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .workspace-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-inactive {
+            background: #dc3545;
+            color: white;
+        }
+
+        .workspace-info {
+            margin-bottom: 20px;
+        }
+
+        .workspace-info p {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        .workspace-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #4facfe;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #718096;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px;
+            font-size: 1.3em;
+            color: #718096;
+        }
+
+        .loading i {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #4facfe;
+        }
+
+        .alert {
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-connected {
+            background: #28a745;
+        }
+
+        .status-disconnected {
+            background: #dc3545;
+        }
+
+        .status-connecting {
+            background: #ffc107;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-faraday">
+                <div class="logo-f">F</div>
+                <div class="logo-text">Faraday</div>
+            </div>
+            <h1>Interface Faraday</h1>
+            <p>Gestion complète des espaces de travail avec données réelles</p>
+        </div>
+
+        <div class="toolbar">
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <button class="btn btn-create" onclick="showCreateModal()">
+                    <i class="fas fa-plus"></i> Nouveau Workspace
+                </button>
+                <button class="btn btn-success" onclick="loadWorkspaces()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+                <button class="btn btn-primary" onclick="testConnection()">
+                    <i class="fas fa-wifi"></i> Test Connexion
+                </button>
+                <button class="btn btn-warning" onclick="clearData()">
+                    <i class="fas fa-trash"></i> Effacer
+                </button>
+            </div>
+            
+            <div class="connection-status">
+                <div id="statusIndicator" class="status-indicator status-connecting"></div>
+                <span id="statusText">Connexion en cours...</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="stats-section">
+                <div class="stat-card">
+                    <h3 id="totalWorkspaces">-</h3>
+                    <p>Total Workspaces</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeWorkspaces">-</h3>
+                    <p>Workspaces Actifs</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalHosts">-</h3>
+                    <p>Total Hosts</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalVulns">-</h3>
+                    <p>Total Vulnérabilités</p>
+                </div>
+            </div>
+
+            <div id="alertContainer"></div>
+            
+            <div id="loadingMessage" class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <div>Chargement des données...</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Configuration finale - Utilise la même méthode que test-8082.html
+        const API_CONFIG = {
+            baseURL: 'http://localhost:8082',
+            credentials: btoa('faraday:faraday')
+        };
+
+        console.log('🚀 Interface Faraday initialisée avec:', API_CONFIG);
+
+        // État global
+        let workspacesData = [];
+        let isLoading = false;
+
+        // Fonctions utilitaires
+        function updateConnectionStatus(status, text) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            indicator.className = `status-indicator status-${status}`;
+            statusText.textContent = text;
+        }
+
+        function showAlert(message, type = 'info', icon = 'fas fa-info-circle') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} fade-in`;
+            alert.innerHTML = `
+                <i class="${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(alert);
+            
+            // Auto-remove après 5 secondes
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.style.animation = 'fadeOut 0.3s ease-out';
+                    setTimeout(() => alert.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
+        }
+
+        function clearData() {
+            document.getElementById('workspacesList').innerHTML = '';
+            document.getElementById('alertContainer').innerHTML = '';
+            document.getElementById('totalWorkspaces').textContent = '-';
+            document.getElementById('activeWorkspaces').textContent = '-';
+            document.getElementById('totalHosts').textContent = '-';
+            document.getElementById('totalVulns').textContent = '-';
+            workspacesData = [];
+        }
+
+        // API - Utilise exactement la même méthode que test-8082.html
+        async function testConnection() {
+            updateConnectionStatus('connecting', 'Test de connexion...');
+            showLoading(true);
+
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/info`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateConnectionStatus('connected', 'Connecté');
+                    showAlert(
+                        `✅ Connexion réussie ! Faraday ${data.Version || 'inconnue'}`, 
+                        'success', 
+                        'fas fa-check-circle'
+                    );
+                    return true;
+                } else {
+                    updateConnectionStatus('disconnected', 'Erreur de connexion');
+                    showAlert(
+                        `❌ Erreur ${response.status}: ${response.statusText}`, 
+                        'error', 
+                        'fas fa-exclamation-triangle'
+                    );
+                    return false;
+                }
+            } catch (error) {
+                updateConnectionStatus('disconnected', 'Connexion échouée');
+                showAlert(
+                    `❌ Erreur de connexion: ${error.message}`, 
+                    'error', 
+                    'fas fa-times-circle'
+                );
+                return false;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadWorkspaces() {
+            if (isLoading) return;
+            isLoading = true;
+            
+            updateConnectionStatus('connecting', 'Chargement...');
+            showLoading(true);
+            clearData();
+
+            try {
+                // Même méthode que test-8082.html
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.rows && Array.isArray(data.rows)) {
+                        workspacesData = data.rows;
+                        displayWorkspaces(workspacesData);
+                        updateStats(workspacesData);
+                        updateConnectionStatus('connected', `${workspacesData.length} workspaces chargés`);
+                        showAlert(
+                            `✅ ${workspacesData.length} workspaces chargés avec succès`, 
+                            'success', 
+                            'fas fa-check-circle'
+                        );
+                    } else {
+                        throw new Error('Format de données inattendu');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+            } catch (error) {
+                updateConnectionStatus('disconnected', 'Erreur de chargement');
+                showAlert(
+                    `❌ Erreur lors du chargement: ${error.message}`, 
+                    'error', 
+                    'fas fa-exclamation-triangle'
+                );
+            } finally {
+                showLoading(false);
+                isLoading = false;
+            }
+        }
+
+        function updateStats(workspaces) {
+            const total = workspaces.length;
+            const active = workspaces.filter(ws => ws.active).length;
+            
+            // Calculer totaux hosts et vulns
+            let totalHosts = 0;
+            let totalVulns = 0;
+            
+            workspaces.forEach(ws => {
+                if (ws.stats) {
+                    totalHosts += ws.stats.hosts || 0;
+                    totalVulns += ws.stats.total_vulns || 0;
+                }
+            });
+
+            document.getElementById('totalWorkspaces').textContent = total;
+            document.getElementById('activeWorkspaces').textContent = active;
+            document.getElementById('totalHosts').textContent = totalHosts;
+            document.getElementById('totalVulns').textContent = totalVulns;
+        }
+
+        function displayWorkspaces(workspaces) {
+            const container = document.getElementById('workspacesList');
+            
+            if (workspaces.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Aucun workspace trouvé</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'workspaces-grid';
+
+            workspaces.forEach(workspace => {
+                const card = createWorkspaceCard(workspace);
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        function createWorkspaceCard(workspace) {
+            const isActive = workspace.active;
+            const stats = workspace.stats || {};
+            
+            const card = document.createElement('div');
+            card.className = `workspace-card ${isActive ? 'active' : 'inactive'} fade-in`;
+            
+            card.innerHTML = `
+                <div class="workspace-header">
+                    <div>
+                        <div class="workspace-title">
+                            <i class="fas fa-folder"></i> ${workspace.name}
+                        </div>
+                        <div class="workspace-status ${isActive ? 'status-active' : 'status-inactive'}">
+                            ${isActive ? 'Actif' : 'Inactif'}
+                        </div>
+                    </div>
+                    <div class="workspace-actions">
+                        <button class="btn btn-primary btn-sm" onclick="editWorkspace('${workspace.name}')">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="toggleWorkspace('${workspace.name}', ${workspace.active})">
+                            <i class="fas fa-toggle-${workspace.active ? 'on' : 'off'}"></i> ${workspace.active ? 'Désactiver' : 'Activer'}
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteWorkspace('${workspace.name}')">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="workspace-info">
+                    <p><strong>Client:</strong> ${workspace.customer || 'Non défini'}</p>
+                    <p><strong>Description:</strong> ${workspace.description || 'Aucune description'}</p>
+                    <p><strong>Type:</strong> ${workspace.public ? 'Public' : 'Privé'}</p>
+                    <p><strong>ID:</strong> ${workspace.id}</p>
+                </div>
+
+                <div class="workspace-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.hosts || 0}</div>
+                        <div class="stat-label">Hosts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.services || 0}</div>
+                        <div class="stat-label">Services</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.total_vulns || 0}</div>
+                        <div class="stat-label">Vulnérabilités</div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Initialisation automatique
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Interface chargée, début des tests...');
+            
+            setTimeout(async () => {
+                const connected = await testConnection();
+                if (connected) {
+                    setTimeout(() => loadWorkspaces(), 1000);
+                }
+            }, 500);
+        });
+
+        // Actualisation automatique toutes les 30 secondes
+        setInterval(() => {
+            if (!isLoading && workspacesData.length > 0) {
+                loadWorkspaces();
+            }
+        }, 30000);
+
+        // ====== FONCTIONS CRUD ======
+
+        // Variables globales pour l'édition
+        let isEditMode = false;
+        let editingWorkspaceName = null;
+
+        // Fonction pour afficher le modal de création
+        function showCreateModal() {
+            isEditMode = false;
+            editingWorkspaceName = null;
+            document.getElementById('modalTitle').textContent = 'Nouveau Workspace';
+            document.getElementById('submitBtn').textContent = 'Créer';
+            document.getElementById('workspaceForm').reset();
+            document.getElementById('workspaceModal').style.display = 'block';
+        }
+
+        // Fonction pour fermer le modal
+        function closeModal() {
+            document.getElementById('workspaceModal').style.display = 'none';
+            document.getElementById('workspaceForm').reset();
+            isEditMode = false;
+            editingWorkspaceName = null;
+        }
+
+        // Fonction pour éditer un workspace
+        async function editWorkspace(workspaceName) {
+            try {
+                // Charger les données du workspace
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${workspaceName}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const workspace = await response.json();
+                    
+                    // Remplir le formulaire avec les données existantes
+                    isEditMode = true;
+                    editingWorkspaceName = workspaceName;
+                    document.getElementById('modalTitle').textContent = 'Modifier Workspace';
+                    document.getElementById('submitBtn').textContent = 'Modifier';
+                    
+                    document.getElementById('workspaceName').value = workspace.name || '';
+                    document.getElementById('workspaceDescription').value = workspace.description || '';
+                    document.getElementById('workspaceCustomer').value = workspace.customer || '';
+                    document.getElementById('workspaceActive').value = workspace.active ? 'true' : 'false';
+                    document.getElementById('workspacePublic').value = workspace.public ? 'true' : 'false';
+                    
+                    document.getElementById('workspaceModal').style.display = 'block';
+                } else {
+                    showAlert(`❌ Erreur lors du chargement: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Erreur lors du chargement: ${error.message}`, 'error');
+            }
+        }
+
+        // Fonction pour basculer l'état d'un workspace
+        async function toggleWorkspace(workspaceName, currentState) {
+            try {
+                const newState = !currentState;
+                
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${workspaceName}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        active: newState
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert(
+                        `✅ Workspace ${newState ? 'activé' : 'désactivé'} avec succès`, 
+                        'success'
+                    );
+                    loadWorkspaces(); // Recharger la liste
+                } else {
+                    showAlert(`❌ Erreur lors de la modification: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Erreur lors de la modification: ${error.message}`, 'error');
+            }
+        }
+
+        // Fonction pour supprimer un workspace
+        async function deleteWorkspace(workspaceName) {
+            if (!confirm(`⚠️ Êtes-vous sûr de vouloir supprimer le workspace "${workspaceName}" ?\n\nCette action est irréversible !`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${workspaceName}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showAlert(`✅ Workspace "${workspaceName}" supprimé avec succès`, 'success');
+                    loadWorkspaces(); // Recharger la liste
+                } else {
+                    showAlert(`❌ Erreur lors de la suppression: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Erreur lors de la suppression: ${error.message}`, 'error');
+            }
+        }
+
+        // Gestionnaire de soumission du formulaire
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('workspaceForm');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(form);
+                    const workspaceData = {
+                        name: formData.get('name'),
+                        description: formData.get('description') || '',
+                        customer: formData.get('customer') || '',
+                        active: formData.get('active') === 'true',
+                        public: formData.get('public') === 'true'
+                    };
+
+                    try {
+                        if (isEditMode) {
+                            // Modifier un workspace existant
+                            const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${editingWorkspaceName}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': `Basic ${API_CONFIG.credentials}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(workspaceData)
+                            });
+
+                            if (response.ok) {
+                                showAlert('✅ Workspace modifié avec succès', 'success');
+                                closeModal();
+                                loadWorkspaces();
+                            } else {
+                                showAlert(`❌ Erreur lors de la modification: ${response.statusText}`, 'error');
+                            }
+                        } else {
+                            // Créer un nouveau workspace
+                            const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Basic ${API_CONFIG.credentials}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(workspaceData)
+                            });
+
+                            if (response.ok) {
+                                showAlert('✅ Workspace créé avec succès', 'success');
+                                closeModal();
+                                loadWorkspaces();
+                            } else {
+                                const errorText = await response.text();
+                                showAlert(`❌ Erreur lors de la création: ${errorText}`, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        showAlert(`❌ Erreur: ${error.message}`, 'error');
+                    }
+                });
+            }
+        });
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('workspaceModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+
+    <!-- Modal pour Créer/Modifier un Workspace -->
+    <div id="workspaceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nouveau Workspace</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="workspaceForm">
+                <div class="form-group">
+                    <label for="workspaceName">Nom du Workspace *</label>
+                    <input type="text" id="workspaceName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="workspaceDescription">Description</label>
+                    <textarea id="workspaceDescription" name="description" placeholder="Description du workspace..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="workspaceCustomer">Client</label>
+                    <input type="text" id="workspaceCustomer" name="customer" placeholder="Nom du client...">
+                </div>
+                <div class="form-group">
+                    <label for="workspaceActive">Statut</label>
+                    <select id="workspaceActive" name="active">
+                        <option value="true">Actif</option>
+                        <option value="false">Inactif</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="workspacePublic">Visibilité</label>
+                    <select id="workspacePublic" name="public">
+                        <option value="false">Privé</option>
+                        <option value="true">Public</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </script>
+</body>
+</html>
+            <h2><i class="fas fa-shield-alt"></i> Faraday Security Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" required value="faraday">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" required value="faraday">
+                </div>
+                <div class="form-group">
+                    <label for="server">Serveur Faraday</label>
+                    <input type="text" id="server" name="server" value="http://localhost:5985" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+            </form>
+            <div id="loginError" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-shield-alt"></i> Faraday Security</h1>
+                <span class="version">Interface Personnalisée v1.0</span>
+            </div>
+            <div class="header-right">
+                <div class="workspace-selector">
+                    <label for="workspaceSelect">Workspace:</label>
+                    <select id="workspaceSelect">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="user-info">
+                    <span id="currentUser">Utilisateur</span>
+                    <button id="logoutBtn" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#hosts" class="nav-link" data-section="hosts">
+                        <i class="fas fa-server"></i>
+                        <span>Hosts</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link" data-section="services">
+                        <i class="fas fa-cogs"></i>
+                        <span>Services</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#vulnerabilities" class="nav-link" data-section="vulnerabilities">
+                        <i class="fas fa-bug"></i>
+                        <span>Vulnérabilités</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#workspaces" class="nav-link" data-section="workspaces">
+                        <i class="fas fa-folder-open"></i>
+                        <span>Workspaces</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#graphics" class="nav-link" data-section="graphics">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Graphics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#planner" class="nav-link" data-section="planner">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Planner</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#commands" class="nav-link" data-section="commands">
+                        <i class="fas fa-terminal"></i>
+                        <span>Commandes</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#agents" class="nav-link" data-section="agents">
+                        <i class="fas fa-robot"></i>
+                        <span>Agents</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    <button id="refreshDashboard" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Statistiques Générales</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalHosts">0</div>
+                                    <div class="stat-label">Hosts</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalServices">0</div>
+                                    <div class="stat-label">Services</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalVulns">0</div>
+                                    <div class="stat-label">Vulnérabilités</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalCommands">0</div>
+                                    <div class="stat-label">Commandes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Vulnérabilités par Sévérité</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Activité Récente</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="recentActivity" class="activity-list">
+                                <p class="loading">Chargement des activités...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hosts Section -->
+            <section id="hosts-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-server"></i> Gestion des Hosts</h2>
+                    <div class="header-actions">
+                        <input type="text" id="hostsSearch" placeholder="Rechercher un host..." class="search-input">
+                        <button id="refreshHosts" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="hostsTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Adresse IP</th>
+                                <th>Nom d'hôte</th>
+                                <th>OS</th>
+                                <th>Services</th>
+                                <th>Vulnérabilités</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="loading-row">Chargement des hosts...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cogs"></i> Gestion des Services</h2>
+                    <div class="header-actions">
+                        <input type="text" id="servicesSearch" placeholder="Rechercher un service..." class="search-input">
+                        <button id="refreshServices" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="servicesTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Host</th>
+                                <th>Port</th>
+                                <th>Protocole</th>
+                                <th>Service</th>
+                                <th>Version</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="loading-row">Chargement des services...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Vulnerabilities Section -->
+            <section id="vulnerabilities-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-bug"></i> Gestion des Vulnérabilités</h2>
+                    <div class="header-actions">
+                        <select id="severityFilter" class="filter-select">
+                            <option value="">Toutes les sévérités</option>
+                            <option value="critical">Critique</option>
+                            <option value="high">Élevée</option>
+                            <option value="medium">Moyenne</option>
+                            <option value="low">Faible</option>
+                            <option value="info">Information</option>
+                        </select>
+                        <input type="text" id="vulnsSearch" placeholder="Rechercher une vulnérabilité..." class="search-input">
+                        <button id="refreshVulns" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="vulnsTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Sévérité</th>
+                                <th>Host</th>
+                                <th>Service</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="loading-row">Chargement des vulnérabilités...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Graphics Section -->
+            <section id="graphics-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-pie"></i> Graphics & Analytics</h2>
+                    <button id="refreshGraphics" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                </div>
+                
+                <div class="graphics-grid">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>Distribution des Vulnérabilités</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="vulnDistributionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>Évolution Temporelle</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="timelineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>Top 10 Services</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="servicesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>Statut des Hosts</h3>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="hostsStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Planner Section -->
+            <section id="planner-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Planner & Scheduling</h2>
+                    <button id="addTask" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nouvelle Tâche
+                    </button>
+                </div>
+                
+                <div class="planner-grid">
+                    <div class="planner-card">
+                        <div class="card-header">
+                            <h3>Calendrier</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="calendar" class="calendar-container">
+                                <!-- Calendar will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="planner-card">
+                        <div class="card-header">
+                            <h3>Tâches Planifiées</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="tasksList" class="tasks-list">
+                                <p class="loading">Chargement des tâches...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="planner-card full-width">
+                        <div class="card-header">
+                            <h3>Timeline des Événements</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="timeline" class="timeline-container">
+                                <!-- Timeline will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Workspaces Section -->
+            <section id="workspaces-section" class="content-section">
+                <div class="workspace-section">
+                    <div class="workspace-header">
+                        <h1><i class="fas fa-folder-open"></i> Gestion des Workspaces</h1>
+                        <div class="workspace-controls">
+                            <div class="workspace-search">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="workspaceSearch" placeholder="Rechercher un workspace...">
+                            </div>
+                            <div class="workspace-actions">
+                                <button id="refreshWorkspacesBtn" class="btn btn-secondary" title="Rafraîchir">
+                                    <i class="fas fa-sync-alt"></i> Actualiser
+                                </button>
+                                <button id="newWorkspaceBtn" class="btn btn-primary" title="Nouveau workspace">
+                                    <i class="fas fa-plus"></i> Nouveau Workspace
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workspaces-container" id="workspacesList">
+                        <div class="loading-container">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Chargement des workspaces...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Commands Section -->
+            <section id="commands-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-terminal"></i> Gestion des Commandes</h2>
+                    <div class="header-actions">
+                        <input type="text" id="commandsSearch" placeholder="Rechercher une commande..." class="search-input">
+                        <button id="refreshCommands" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="commandsTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Commande</th>
+                                <th>Outil</th>
+                                <th>Utilisateur</th>
+                                <th>Date d'exécution</th>
+                                <th>Durée</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="loading-row">Chargement des commandes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Agents Section -->
+            <section id="agents-section" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-robot"></i> Gestion des Agents</h2>
+                    <div class="header-actions">
+                        <button id="createAgent" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Créer un Agent
+                        </button>
+                        <button id="refreshAgents" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="agents-grid">
+                    <div id="agentsList" class="agents-list">
+                        <p class="loading">Chargement des agents...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification" style="display: none;">
+        <span id="notificationMessage"></span>
+        <button id="closeNotification" class="close-btn">&times;</button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Chargement en cours...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script src="js/cors-proxy.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/graphics.js"></script>
+    <script src="js/planner.js"></script>
+    <script src="js/workspace.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

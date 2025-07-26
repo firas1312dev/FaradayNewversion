@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Interface Faraday</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; } .error { color: red; } .info { color: blue; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Tests Interface Faraday Personnalisée</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Connectivité API</h2>
+        <button onclick="testAPI()">Tester API</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Authentification</h2>
+        <button onclick="testAuth()">Tester Auth</button>
+        <div id="auth-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Workspaces</h2>
+        <button onclick="testWorkspaces()">Charger Workspaces</button>
+        <div id="workspace-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test Module Graphics</h2>
+        <button onclick="testGraphics()">Tester Graphics</button>
+        <div id="graphics-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Test Module Planner</h2>
+        <button onclick="testPlanner()">Tester Planner</button>
+        <div id="planner-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5985/_api/v3';
+        const credentials = btoa('faraday:faraday');
+        const headers = {
+            'Authorization': `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+        };
+
+        async function testAPI() {
+            const result = document.getElementById('api-result');
+            result.innerHTML = '⏳ Test en cours...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/info`, { headers });
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `<span class="success">✅ API OK</span><br>Version: ${data.Version}`;
+                } else {
+                    result.innerHTML = `<span class="error">❌ API Error: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
+            }
+        }
+
+        async function testAuth() {
+            const result = document.getElementById('auth-result');
+            result.innerHTML = '⏳ Test authentification...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/info`, { headers });
+                if (response.ok) {
+                    result.innerHTML = '<span class="success">✅ Authentification réussie</span>';
+                } else if (response.status === 401) {
+                    result.innerHTML = '<span class="error">❌ Authentification échouée</span>';
+                } else {
+                    result.innerHTML = `<span class="error">❌ Erreur: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Erreur réseau: ${error.message}</span>`;
+            }
+        }
+
+        async function testWorkspaces() {
+            const result = document.getElementById('workspace-result');
+            result.innerHTML = '⏳ Chargement des workspaces...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/ws`, { headers });
+                if (response.ok) {
+                    const workspaces = await response.json();
+                    result.innerHTML = `<span class="success">✅ ${workspaces.length} workspace(s) trouvé(s)</span><br>`;
+                    workspaces.forEach(ws => {
+                        result.innerHTML += `📁 ${ws.name}<br>`;
+                    });
+                } else {
+                    result.innerHTML = `<span class="error">❌ Erreur: ${response.status}</span>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
+            }
+        }
+
+        function testGraphics() {
+            const result = document.getElementById('graphics-result');
+            result.innerHTML = '⏳ Test du module Graphics...';
+            
+            // Simuler le test du module Graphics
+            setTimeout(() => {
+                const hasChartJS = typeof Chart !== 'undefined';
+                const hasModule = typeof GraphicsModule !== 'undefined' || typeof graphicsModule !== 'undefined';
+                
+                let status = '';
+                if (hasChartJS) status += '<span class="success">✅ Chart.js chargé</span><br>';
+                else status += '<span class="error">❌ Chart.js manquant</span><br>';
+                
+                if (hasModule) status += '<span class="success">✅ Module Graphics disponible</span><br>';
+                else status += '<span class="info">ℹ️ Module Graphics non chargé (normal en test isolé)</span><br>';
+                
+                status += '<span class="info">📊 Types de graphiques supportés:</span><br>';
+                status += '  - Distribution des vulnérabilités<br>';
+                status += '  - Distribution des hôtes<br>';
+                status += '  - Analyse temporelle<br>';
+                status += '  - Matrice de risque<br>';
+                
+                result.innerHTML = status;
+            }, 500);
+        }
+
+        function testPlanner() {
+            const result = document.getElementById('planner-result');
+            result.innerHTML = '⏳ Test du module Planner...';
+            
+            // Simuler le test du module Planner
+            setTimeout(() => {
+                const hasLocalStorage = typeof Storage !== 'undefined';
+                const hasModule = typeof PlannerModule !== 'undefined' || typeof plannerModule !== 'undefined';
+                
+                let status = '';
+                if (hasLocalStorage) status += '<span class="success">✅ LocalStorage disponible</span><br>';
+                else status += '<span class="error">❌ LocalStorage non supporté</span><br>';
+                
+                if (hasModule) status += '<span class="success">✅ Module Planner disponible</span><br>';
+                else status += '<span class="info">ℹ️ Module Planner non chargé (normal en test isolé)</span><br>';
+                
+                status += '<span class="info">📅 Fonctionnalités du Planner:</span><br>';
+                status += '  - Calendrier interactif<br>';
+                status += '  - Gestion des tâches<br>';
+                status += '  - Gestion des projets<br>';
+                status += '  - Système de priorités<br>';
+                
+                result.innerHTML = status;
+            }, 500);
+        }
+
+        // Test automatique au chargement
+        window.onload = function() {
+            console.log('🧪 Page de test chargée');
+            // Lancer automatiquement le test API
+            setTimeout(testAPI, 1000);
+        };
+    </script>
+</body>
+</html>

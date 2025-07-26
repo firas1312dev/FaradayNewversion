@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Faraday</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .endpoint-group {
+            margin-bottom: 25px;
+        }
+
+        .endpoint-group h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .endpoint-button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .endpoint-button:hover {
+            background: #4facfe;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .endpoint-button.active {
+            background: #4facfe;
+            color: white;
+            border-color: #4facfe;
+        }
+
+        .request-form {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .method-get { background: #48bb78; color: white; }
+        .method-post { background: #4299e1; color: white; }
+        .method-put { background: #ed8936; color: white; }
+        .method-delete { background: #f56565; color: white; }
+
+        .send-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .send-button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .response-section {
+            margin-top: 25px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-success { background: #c6f6d5; color: #2f855a; }
+        .status-error { background: #fed7d7; color: #c53030; }
+        .status-warning { background: #faf089; color: #975a16; }
+
+        .response-content {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            color: #4a5568;
+            font-style: italic;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+
+        .tab.active {
+            color: #4facfe;
+            border-bottom-color: #4facfe;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .back-button {
+            background: #718096;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #4a5568;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="home.html" class="back-button">← Retour à l'accueil</a>
+            <h1>🧪 Test API Faraday</h1>
+            <p>Interface interactive pour tester les endpoints de l'API Faraday</p>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="endpoint-group">
+                    <h3>🔍 Information</h3>
+                    <button class="endpoint-button active" data-endpoint="info">
+                        <span class="method-badge method-get">GET</span>
+                        Server Info
+                    </button>
+                </div>
+
+                <div class="endpoint-group">
+                    <h3>🏢 Workspaces</h3>
+                    <button class="endpoint-button" data-endpoint="workspaces-list">
+                        <span class="method-badge method-get">GET</span>
+                        Liste des workspaces
+                    </button>
+                    <button class="endpoint-button" data-endpoint="workspace-create">
+                        <span class="method-badge method-post">POST</span>
+                        Créer workspace
+                    </button>
+                    <button class="endpoint-button" data-endpoint="workspace-get">
+                        <span class="method-badge method-get">GET</span>
+                        Détails workspace
+                    </button>
+                    <button class="endpoint-button" data-endpoint="workspace-update">
+                        <span class="method-badge method-put">PUT</span>
+                        Modifier workspace
+                    </button>
+                    <button class="endpoint-button" data-endpoint="workspace-delete">
+                        <span class="method-badge method-delete">DEL</span>
+                        Supprimer workspace
+                    </button>
+                </div>
+
+                <div class="endpoint-group">
+                    <h3>🖥️ Hosts</h3>
+                    <button class="endpoint-button" data-endpoint="hosts-list">
+                        <span class="method-badge method-get">GET</span>
+                        Liste des hosts
+                    </button>
+                    <button class="endpoint-button" data-endpoint="host-create">
+                        <span class="method-badge method-post">POST</span>
+                        Créer host
+                    </button>
+                </div>
+
+                <div class="endpoint-group">
+                    <h3>🛡️ Vulnérabilités</h3>
+                    <button class="endpoint-button" data-endpoint="vulns-list">
+                        <span class="method-badge method-get">GET</span>
+                        Liste vulnérabilités
+                    </button>
+                    <button class="endpoint-button" data-endpoint="vuln-create">
+                        <span class="method-badge method-post">POST</span>
+                        Créer vulnérabilité
+                    </button>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="request-form">
+                    <div class="form-group">
+                        <label for="endpoint-url">Endpoint URL:</label>
+                        <input type="text" id="endpoint-url" readonly value="/_api/v3/info">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="http-method">Méthode HTTP:</label>
+                        <select id="http-method">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="workspace-param-group" style="display: none;">
+                        <label for="workspace-name">Nom du workspace:</label>
+                        <input type="text" id="workspace-name" placeholder="ex: test-workspace">
+                    </div>
+
+                    <div class="form-group" id="request-body-group" style="display: none;">
+                        <label for="request-body">Body de la requête (JSON):</label>
+                        <textarea id="request-body" rows="8" placeholder='{"name": "test", "description": "..."}'></textarea>
+                    </div>
+
+                    <button class="send-button" id="send-request">
+                        🚀 Envoyer la requête
+                    </button>
+                </div>
+
+                <div class="response-section">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="response">Réponse</div>
+                        <div class="tab" data-tab="headers">Headers</div>
+                        <div class="tab" data-tab="request">Requête envoyée</div>
+                    </div>
+
+                    <div class="response-header">
+                        <h3>Résultat:</h3>
+                        <span class="status-badge" id="status-badge" style="display: none;">En attente</span>
+                    </div>
+
+                    <div class="tab-content active" id="response-content">
+                        <div class="response-content">
+                            <div class="loading">
+                                Sélectionnez un endpoint et cliquez sur "Envoyer la requête" pour voir le résultat...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="headers-content">
+                        <div class="response-content">
+                            <div class="loading">Les headers de réponse apparaîtront ici...</div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="request-content">
+                        <div class="response-content">
+                            <div class="loading">Les détails de la requête envoyée apparaîtront ici...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        class APITester {
+            constructor() {
+                this.api = new FaradayAPI();
+                this.currentEndpoint = 'info';
+                this.setupEventListeners();
+                this.loadEndpoint('info');
+            }
+
+            setupEventListeners() {
+                // Sélection d'endpoint
+                document.querySelectorAll('.endpoint-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const endpoint = e.target.closest('.endpoint-button').dataset.endpoint;
+                        this.selectEndpoint(endpoint);
+                        this.loadEndpoint(endpoint);
+                    });
+                });
+
+                // Envoi de requête
+                document.getElementById('send-request').addEventListener('click', () => {
+                    this.sendRequest();
+                });
+
+                // Gestion des tabs
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+            }
+
+            selectEndpoint(endpoint) {
+                document.querySelectorAll('.endpoint-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-endpoint="${endpoint}"]`).classList.add('active');
+                this.currentEndpoint = endpoint;
+            }
+
+            loadEndpoint(endpoint) {
+                const configs = {
+                    'info': {
+                        url: '/_api/v3/info',
+                        method: 'GET',
+                        needsWorkspace: false,
+                        hasBody: false
+                    },
+                    'workspaces-list': {
+                        url: '/_api/v3/ws',
+                        method: 'GET',
+                        needsWorkspace: false,
+                        hasBody: false
+                    },
+                    'workspace-create': {
+                        url: '/_api/v3/ws',
+                        method: 'POST',
+                        needsWorkspace: false,
+                        hasBody: true,
+                        bodyTemplate: {
+                            name: 'test-workspace',
+                            description: 'Workspace créé via l\'interface de test'
+                        }
+                    },
+                    'workspace-get': {
+                        url: '/_api/v3/ws/{workspace}',
+                        method: 'GET',
+                        needsWorkspace: true,
+                        hasBody: false
+                    },
+                    'workspace-update': {
+                        url: '/_api/v3/ws/{workspace}',
+                        method: 'PUT',
+                        needsWorkspace: true,
+                        hasBody: true,
+                        bodyTemplate: {
+                            name: 'workspace-modifie',
+                            description: 'Description mise à jour'
+                        }
+                    },
+                    'workspace-delete': {
+                        url: '/_api/v3/ws/{workspace}',
+                        method: 'DELETE',
+                        needsWorkspace: true,
+                        hasBody: false
+                    },
+                    'hosts-list': {
+                        url: '/_api/v3/ws/{workspace}/hosts',
+                        method: 'GET',
+                        needsWorkspace: true,
+                        hasBody: false
+                    },
+                    'host-create': {
+                        url: '/_api/v3/ws/{workspace}/hosts',
+                        method: 'POST',
+                        needsWorkspace: true,
+                        hasBody: true,
+                        bodyTemplate: {
+                            ip: '192.168.1.100',
+                            description: 'Host créé via test API'
+                        }
+                    },
+                    'vulns-list': {
+                        url: '/_api/v3/ws/{workspace}/vulns',
+                        method: 'GET',
+                        needsWorkspace: true,
+                        hasBody: false
+                    },
+                    'vuln-create': {
+                        url: '/_api/v3/ws/{workspace}/vulns',
+                        method: 'POST',
+                        needsWorkspace: true,
+                        hasBody: true,
+                        bodyTemplate: {
+                            name: 'Test Vulnerability',
+                            severity: 'medium',
+                            description: 'Vulnérabilité créée via test API'
+                        }
+                    }
+                };
+
+                const config = configs[endpoint];
+                if (!config) return;
+
+                document.getElementById('endpoint-url').value = config.url;
+                document.getElementById('http-method').value = config.method;
+
+                // Afficher/masquer les champs selon l'endpoint
+                const workspaceGroup = document.getElementById('workspace-param-group');
+                const bodyGroup = document.getElementById('request-body-group');
+
+                workspaceGroup.style.display = config.needsWorkspace ? 'block' : 'none';
+                bodyGroup.style.display = config.hasBody ? 'block' : 'none';
+
+                if (config.hasBody && config.bodyTemplate) {
+                    document.getElementById('request-body').value = JSON.stringify(config.bodyTemplate, null, 2);
+                }
+
+                if (config.needsWorkspace) {
+                    document.getElementById('workspace-name').placeholder = 'Nom du workspace requis';
+                }
+            }
+
+            async sendRequest() {
+                const sendButton = document.getElementById('send-request');
+                const statusBadge = document.getElementById('status-badge');
+                
+                sendButton.disabled = true;
+                sendButton.textContent = '⏳ Envoi en cours...';
+                statusBadge.style.display = 'inline-block';
+                statusBadge.className = 'status-badge';
+                statusBadge.textContent = 'En cours...';
+
+                try {
+                    let url = document.getElementById('endpoint-url').value;
+                    const method = document.getElementById('http-method').value;
+                    const workspaceName = document.getElementById('workspace-name').value;
+                    
+                    // Remplacer {workspace} dans l'URL
+                    if (url.includes('{workspace}')) {
+                        if (!workspaceName) {
+                            throw new Error('Nom du workspace requis pour cet endpoint');
+                        }
+                        url = url.replace('{workspace}', encodeURIComponent(workspaceName));
+                    }
+
+                    // Préparer la requête
+                    const requestOptions = {
+                        method: method,
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                            'Content-Type': 'application/json'
+                        }
+                    };
+
+                    // Ajouter le body si nécessaire
+                    const bodyGroup = document.getElementById('request-body-group');
+                    if (bodyGroup.style.display !== 'none') {
+                        const bodyText = document.getElementById('request-body').value;
+                        if (bodyText.trim()) {
+                            requestOptions.body = bodyText;
+                        }
+                    }
+
+                    // Enregistrer les détails de la requête
+                    this.lastRequest = {
+                        url: `http://localhost:8082${url}`,
+                        ...requestOptions
+                    };
+
+                    // Envoyer la requête via le proxy
+                    const response = await fetch(`http://localhost:8082${url}`, requestOptions);
+                    
+                    // Traiter la réponse
+                    const responseText = await response.text();
+                    let responseData;
+                    
+                    try {
+                        responseData = JSON.parse(responseText);
+                    } catch {
+                        responseData = responseText;
+                    }
+
+                    // Mettre à jour l'interface
+                    this.displayResponse(response, responseData);
+                    this.displayHeaders(response.headers);
+                    this.displayRequest();
+
+                } catch (error) {
+                    this.displayError(error);
+                } finally {
+                    sendButton.disabled = false;
+                    sendButton.textContent = '🚀 Envoyer la requête';
+                }
+            }
+
+            displayResponse(response, data) {
+                const statusBadge = document.getElementById('status-badge');
+                const responseContent = document.querySelector('#response-content .response-content');
+
+                // Statut
+                if (response.ok) {
+                    statusBadge.className = 'status-badge status-success';
+                    statusBadge.textContent = `${response.status} ${response.statusText}`;
+                } else {
+                    statusBadge.className = 'status-badge status-error';
+                    statusBadge.textContent = `${response.status} ${response.statusText}`;
+                }
+
+                // Contenu
+                const formattedData = typeof data === 'object' ? 
+                    JSON.stringify(data, null, 2) : data;
+                
+                responseContent.textContent = formattedData;
+            }
+
+            displayHeaders(headers) {
+                const headersContent = document.querySelector('#headers-content .response-content');
+                let headersText = '';
+                
+                headers.forEach((value, key) => {
+                    headersText += `${key}: ${value}\n`;
+                });
+
+                headersContent.textContent = headersText || 'Aucun header reçu';
+            }
+
+            displayRequest() {
+                const requestContent = document.querySelector('#request-content .response-content');
+                if (this.lastRequest) {
+                    const requestText = `URL: ${this.lastRequest.url}
+Method: ${this.lastRequest.method}
+Headers: ${JSON.stringify(this.lastRequest.headers, null, 2)}
+${this.lastRequest.body ? `Body: ${this.lastRequest.body}` : 'Pas de body'}`;
+                    
+                    requestContent.textContent = requestText;
+                }
+            }
+
+            displayError(error) {
+                const statusBadge = document.getElementById('status-badge');
+                const responseContent = document.querySelector('#response-content .response-content');
+
+                statusBadge.className = 'status-badge status-error';
+                statusBadge.textContent = 'Erreur';
+
+                responseContent.textContent = `Erreur: ${error.message}
+
+Stack trace:
+${error.stack}`;
+            }
+
+            switchTab(tabName) {
+                // Mettre à jour les tabs
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+                // Mettre à jour le contenu
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabName}-content`).classList.add('active');
+            }
+        }
+
+        // Initialiser l'interface
+        document.addEventListener('DOMContentLoaded', () => {
+            new APITester();
+        });
+    </script>
+</body>
+</html>

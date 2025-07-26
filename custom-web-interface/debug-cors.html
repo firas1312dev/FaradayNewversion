@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug CORS</title>
+</head>
+<body>
+    <h1>Debug Connexion Faraday</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testDirectAPI() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>🔄 Test en cours...</p>';
+            
+            try {
+                // Test direct avec fetch
+                console.log('Test 1: Fetch direct vers /info');
+                const response = await fetch('http://localhost:5985/_api/v3/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                results.innerHTML = `
+                    <h3>✅ Test Direct Réussi</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Data:</strong> ${JSON.stringify(data, null, 2)}</p>
+                `;
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                results.innerHTML = `
+                    <h3>❌ Test Direct Échoué</h3>
+                    <p><strong>Erreur:</strong> ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Test automatique
+        window.addEventListener('load', testDirectAPI);
+    </script>
+</body>
+</html>

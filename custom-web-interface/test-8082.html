@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CORS - Port 8082</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        .test-btn { background: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; margin: 10px; font-size: 16px; }
+        .test-btn:hover { background: #0056b3; }
+        .result { padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 5px solid; }
+        .success { background: #d4edda; border-color: #28a745; color: #155724; }
+        .error { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .info { background: #d1ecf1; border-color: #17a2b8; color: #0c5460; }
+        .warning { background: #fff3cd; border-color: #ffc107; color: #856404; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; }
+        .status { display: inline-block; padding: 5px 10px; border-radius: 15px; color: white; font-weight: bold; margin-right: 10px; }
+        .status.ok { background: #28a745; }
+        .status.error { background: #dc3545; }
+        .config { background: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Connexion Proxy CORS - Port 8082</h1>
+        
+        <div class="config">
+            <h3>📋 Configuration Détectée</h3>
+            <div>Port Interface: <strong id="interfacePort"></strong></div>
+            <div>URL Actuelle: <strong id="currentUrl"></strong></div>
+            <div>Proxy Utilisé: <strong id="proxyUsed"></strong></div>
+            <div>URL Base API: <strong id="apiBaseUrl"></strong></div>
+        </div>
+        
+        <div>
+            <button class="test-btn" onclick="testProxy8082()">🧪 Test Proxy 8082</button>
+            <button class="test-btn" onclick="testProxy8081()">⚠️ Test Ancien 8081</button>
+            <button class="test-btn" onclick="testFaradayDirect()">🌐 Test Direct 5985</button>
+            <button class="test-btn" onclick="clearResults()">🗑️ Effacer</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const currentPort = window.location.port || '80';
+        const isUsingProxy = currentPort === '8888';
+        const baseURL8082 = 'http://localhost:8082/proxy';
+        const baseURL8081 = 'http://localhost:8081/proxy';
+        const baseURLDirect = 'http://localhost:5985';
+        const credentials = btoa('faraday:faraday');
+
+        // Affichage configuration
+        document.getElementById('interfacePort').textContent = currentPort;
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('proxyUsed').textContent = isUsingProxy ? 'Oui (Port 8888)' : 'Non';
+        document.getElementById('apiBaseUrl').textContent = isUsingProxy ? baseURL8082 : baseURLDirect;
+
+        function addResult(title, message, type = 'info', data = null) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            
+            let content = `<h4>${title}</h4><p>${message}</p>`;
+            if (data) {
+                content += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            
+            div.innerHTML = content;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        async function makeRequest(url, title) {
+            const startTime = Date.now();
+            
+            try {
+                addResult(`${title} - Démarrage`, `📡 Requête vers: ${url}`, 'info');
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Basic ${credentials}`,
+                        'Cache-Control': 'no-cache'
+                    },
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                const duration = Date.now() - startTime;
+                const status = response.ok ? 'success' : 'error';
+                
+                addResult(
+                    `${title} - Réponse (${duration}ms)`,
+                    `<span class="status ${response.ok ? 'ok' : 'error'}">${response.status}</span>${response.statusText}`,
+                    status
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const workspaceCount = data.rows ? data.rows.length : 0;
+                    
+                    addResult(
+                        `${title} - Données`,
+                        `✅ Succès! ${workspaceCount} workspaces récupérés`,
+                        'success',
+                        {
+                            totalWorkspaces: workspaceCount,
+                            firstWorkspace: data.rows?.[0]?.name || 'Aucun',
+                            dataKeys: Object.keys(data),
+                            responseDuration: `${duration}ms`
+                        }
+                    );
+                } else {
+                    const errorText = await response.text();
+                    addResult(
+                        `${title} - Erreur`,
+                        `❌ Erreur serveur: ${errorText}`,
+                        'error'
+                    );
+                }
+                
+            } catch (error) {
+                const duration = Date.now() - startTime;
+                addResult(
+                    `${title} - Exception (${duration}ms)`,
+                    `❌ ${error.message}`,
+                    'error',
+                    {
+                        errorType: error.name,
+                        errorMessage: error.message,
+                        duration: `${duration}ms`
+                    }
+                );
+            }
+        }
+
+        async function testProxy8082() {
+            await makeRequest(`${baseURL8082}/_api/v3/ws`, '🔧 Proxy CORS 8082');
+        }
+
+        async function testProxy8081() {
+            await makeRequest(`${baseURL8081}/_api/v3/ws`, '⚠️ Ancien Proxy 8081');
+        }
+
+        async function testFaradayDirect() {
+            await makeRequest(`${baseURLDirect}/_api/v3/ws`, '🌐 Faraday Direct 5985');
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            addResult('🚀 Initialisation', 'Page chargée - Test automatique du proxy 8082 dans 2 secondes...', 'info');
+            
+            setTimeout(() => {
+                testProxy8082();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

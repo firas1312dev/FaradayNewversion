@@ -1,0 +1,137 @@
+2025-07-11T09:30:16+0000 - faraday.server.app - INFO {MainThread} [pid:64] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-11T09:30:16+0000 - faraday.server.app - INFO {MainThread} [pid:64] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-11T09:30:22+0000 - faraday.server.app - INFO {MainThread} [pid:68] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-11T09:30:22+0000 - faraday.server.app - INFO {MainThread} [pid:68] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-11T09:31:34+0000 - audit - WARNING {Dummy-5} [pid:64] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:31:34.274396] - Reason: [Invalid Password]
+2025-07-11T09:31:34+0000 - faraday.server.app - WARNING {Dummy-5} [pid:64] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:31:34.274396] - Reason: [Invalid Password]
+2025-07-11T09:33:46+0000 - audit - WARNING {Dummy-9} [pid:64] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:33:46.079156] - Reason: [Invalid Password]
+2025-07-11T09:33:46+0000 - faraday.server.app - WARNING {Dummy-9} [pid:64] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:33:46.079156] - Reason: [Invalid Password]
+2025-07-11T09:33:55+0000 - audit - WARNING {Dummy-9} [pid:64] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:33:54.519215] - Reason: [Invalid Password]
+2025-07-11T09:33:55+0000 - faraday.server.app - WARNING {Dummy-9} [pid:64] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:33:54.519215] - Reason: [Invalid Password]
+2025-07-11T09:34:56+0000 - audit - WARNING {Dummy-15} [pid:64] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:34:56.136189] - Reason: [Invalid Password]
+2025-07-11T09:34:56+0000 - faraday.server.app - WARNING {Dummy-15} [pid:64] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:34:56.136189] - Reason: [Invalid Password]
+2025-07-11T09:35:04+0000 - audit - WARNING {Dummy-15} [pid:64] [app.py:690 - validate()]  Invalid Login - User [Faraday] from IP [172.23.0.1] at [2025-07-11 09:35:04.560783] - Reason: [Invalid Username]
+2025-07-11T09:35:04+0000 - faraday.server.app - WARNING {Dummy-15} [pid:64] [app.py:692 - validate()]  Invalid Login - User [Faraday] from IP [172.23.0.1] at [2025-07-11 09:35:04.560783] - Reason: [Invalid Username]
+2025-07-11T09:35:52+0000 - audit - WARNING {Dummy-16} [pid:64] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-11 09:35:52.461979]
+2025-07-11T09:35:52+0000 - faraday.server.app - WARNING {Dummy-16} [pid:64] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-11 09:35:52.461979]
+2025-07-11T09:42:13+0000 - audit - WARNING {Dummy-17} [pid:64] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-11 09:42:13.343248]
+2025-07-11T09:42:13+0000 - faraday.server.app - WARNING {Dummy-17} [pid:64] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-11 09:42:13.343248]
+2025-07-11T09:43:45+0000 - audit - WARNING {Dummy-18} [pid:64] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:43:45.131831] - Reason: [Invalid Password]
+2025-07-11T09:43:45+0000 - faraday.server.app - WARNING {Dummy-18} [pid:64] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 09:43:45.131831] - Reason: [Invalid Password]
+2025-07-11T09:47:01+0000 - audit - WARNING {Dummy-20} [pid:64] [app.py:690 - validate()]  Invalid Login - User [admin] from IP [172.23.0.1] at [2025-07-11 09:47:01.551211] - Reason: [Invalid Username]
+2025-07-11T09:47:01+0000 - faraday.server.app - WARNING {Dummy-20} [pid:64] [app.py:692 - validate()]  Invalid Login - User [admin] from IP [172.23.0.1] at [2025-07-11 09:47:01.551211] - Reason: [Invalid Username]
+2025-07-11T11:19:59+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-11T11:19:59+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-11T11:20:03+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-11T11:20:03+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-11T11:21:47+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:21:47.192938] - Reason: [Invalid Password]
+2025-07-11T11:21:47+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:21:47.192938] - Reason: [Invalid Password]
+2025-07-11T11:21:54+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:682 - validate()]  Invalid Login - User [] from IP [172.23.0.1] at [2025-07-11 11:21:54.387422]
+2025-07-11T11:21:54+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:683 - validate()]  Invalid Login - User [] from IP [172.23.0.1] at [2025-07-11 11:21:54.387422]
+2025-07-11T11:24:12+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:24:12.303566] - Reason: [Invalid Password]
+2025-07-11T11:24:12+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:24:12.303566] - Reason: [Invalid Password]
+2025-07-11T11:29:11+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:29:11.122811] - Reason: [Invalid Password]
+2025-07-11T11:29:11+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:29:11.122811] - Reason: [Invalid Password]
+2025-07-11T11:30:14+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:30:13.675030] - Reason: [Invalid Password]
+2025-07-11T11:30:14+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:30:13.675030] - Reason: [Invalid Password]
+2025-07-11T11:34:52+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:34:52.386635] - Reason: [Invalid Password]
+2025-07-11T11:34:52+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:34:52.386635] - Reason: [Invalid Password]
+2025-07-11T11:35:00+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:34:59.766655] - Reason: [Invalid Password]
+2025-07-11T11:35:00+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:34:59.766655] - Reason: [Invalid Password]
+2025-07-11T11:35:01+0000 - audit - WARNING {Dummy-7} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:35:01.610351] - Reason: [Invalid Password]
+2025-07-11T11:35:01+0000 - faraday.server.app - WARNING {Dummy-7} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-11 11:35:01.610351] - Reason: [Invalid Password]
+2025-07-11T11:38:52+0000 - faraday.server.app - WARNING {Dummy-9} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-11T12:42:07+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-11T12:42:07+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-11T12:42:11+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-11T12:42:11+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-11T12:48:37+0000 - audit - INFO {Dummy-6} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-11 12:48:37.947022]
+2025-07-11T12:48:37+0000 - faraday.server.app - INFO {Dummy-6} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-11 12:48:37.947022]
+2025-07-13T15:51:40+0000 - audit - INFO {Dummy-16} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-13 15:51:40.615315]
+2025-07-13T15:51:40+0000 - faraday.server.app - INFO {Dummy-16} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-13 15:51:40.615315]
+2025-07-14T16:16:43+0000 - audit - INFO {Dummy-47} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-14 16:16:43.850677]
+2025-07-14T16:16:43+0000 - faraday.server.app - INFO {Dummy-47} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-14 16:16:43.850677]
+2025-07-16T14:51:32+0000 - audit - INFO {Dummy-77} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-16 14:51:32.161918]
+2025-07-16T14:51:32+0000 - faraday.server.app - INFO {Dummy-77} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-16 14:51:32.161918]
+2025-07-16T18:15:51+0000 - faraday.server.app - WARNING {Dummy-262} [pid:23] [app.py:228 - load_user_from_request()]  Authorization header does not have type
+2025-07-16T18:17:40+0000 - faraday.server.app - WARNING {Dummy-290} [pid:23] [app.py:228 - load_user_from_request()]  Authorization header does not have type
+2025-07-16T18:18:30+0000 - faraday.server.app - WARNING {Dummy-302} [pid:23] [app.py:228 - load_user_from_request()]  Authorization header does not have type
+2025-07-16T18:23:13+0000 - faraday.server.app - WARNING {Dummy-369} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-16T18:24:13+0000 - faraday.server.app - WARNING {Dummy-392} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-16T18:25:48+0000 - faraday.server.app - WARNING {Dummy-420} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-16T18:26:10+0000 - faraday.server.app - WARNING {Dummy-429} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-17T14:21:46+0000 - faraday.server.app - WARNING {Dummy-737} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-17T14:23:26+0000 - faraday.server.app - WARNING {Dummy-778} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-17T14:23:36+0000 - faraday.server.app - WARNING {Dummy-784} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-17T15:32:20+0000 - audit - INFO {Dummy-1186} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-17 15:32:20.704439]
+2025-07-17T15:32:20+0000 - faraday.server.app - INFO {Dummy-1186} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-17 15:32:20.704439]
+2025-07-18T15:24:11+0000 - audit - WARNING {Dummy-1914} [pid:23] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 15:24:11.171229]
+2025-07-18T15:24:11+0000 - faraday.server.app - WARNING {Dummy-1914} [pid:23] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 15:24:11.171229]
+2025-07-18T16:38:33+0000 - faraday.server.app - WARNING {Dummy-2115} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-18T16:39:29+0000 - audit - WARNING {Dummy-2115} [pid:23] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:39:29.421154]
+2025-07-18T16:39:29+0000 - faraday.server.app - WARNING {Dummy-2115} [pid:23] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:39:29.421154]
+2025-07-18T16:50:13+0000 - audit - WARNING {Dummy-2203} [pid:23] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:50:13.048176]
+2025-07-18T16:50:13+0000 - faraday.server.app - WARNING {Dummy-2203} [pid:23] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:50:13.048176]
+2025-07-18T16:50:19+0000 - audit - WARNING {Dummy-2203} [pid:23] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:50:19.947510]
+2025-07-18T16:50:19+0000 - faraday.server.app - WARNING {Dummy-2203} [pid:23] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:50:19.947510]
+2025-07-18T16:50:26+0000 - audit - WARNING {Dummy-2203} [pid:23] [app.py:682 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:50:26.836387]
+2025-07-18T16:50:26+0000 - faraday.server.app - WARNING {Dummy-2203} [pid:23] [app.py:683 - validate()]  Invalid Login - User [None] from IP [172.23.0.1] at [2025-07-18 16:50:26.836387]
+2025-07-18T16:54:54+0000 - audit - INFO {Dummy-2214} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:54:54.727193]
+2025-07-18T16:54:54+0000 - faraday.server.app - INFO {Dummy-2214} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:54:54.727193]
+2025-07-18T16:55:03+0000 - audit - INFO {Dummy-2214} [pid:23] [app.py:345 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-18 16:55:03.457058]
+2025-07-18T16:55:03+0000 - faraday.server.app - INFO {Dummy-2214} [pid:23] [app.py:346 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-18 16:55:03.457058]
+2025-07-18T16:55:26+0000 - audit - WARNING {Dummy-2214} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-18 16:55:26.015066] - Reason: [Invalid Password]
+2025-07-18T16:55:26+0000 - faraday.server.app - WARNING {Dummy-2214} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-18 16:55:26.015066] - Reason: [Invalid Password]
+2025-07-18T16:55:35+0000 - audit - INFO {Dummy-2214} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:55:35.597694]
+2025-07-18T16:55:35+0000 - faraday.server.app - INFO {Dummy-2214} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:55:35.597694]
+2025-07-18T16:56:40+0000 - audit - INFO {Dummy-2214} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:56:40.694222]
+2025-07-18T16:56:40+0000 - faraday.server.app - INFO {Dummy-2214} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:56:40.694222]
+2025-07-18T16:57:01+0000 - audit - INFO {Dummy-2214} [pid:23] [app.py:345 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-18 16:57:01.786131]
+2025-07-18T16:57:01+0000 - faraday.server.app - INFO {Dummy-2214} [pid:23] [app.py:346 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-18 16:57:01.786131]
+2025-07-18T16:57:05+0000 - audit - WARNING {Dummy-2214} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-18 16:57:04.912195] - Reason: [Invalid Password]
+2025-07-18T16:57:05+0000 - faraday.server.app - WARNING {Dummy-2214} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-18 16:57:04.912195] - Reason: [Invalid Password]
+2025-07-18T16:57:19+0000 - audit - INFO {Dummy-2214} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:57:19.482625]
+2025-07-18T16:57:19+0000 - faraday.server.app - INFO {Dummy-2214} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-18 16:57:19.482625]
+2025-07-20T16:04:34+0000 - audit - WARNING {Dummy-2580} [pid:23] [app.py:707 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-20 16:04:33.296402] - Reason: [Invalid Password]
+2025-07-20T16:04:34+0000 - faraday.server.app - WARNING {Dummy-2580} [pid:23] [app.py:709 - validate()]  Invalid Login - User [faraday] from IP [172.23.0.1] at [2025-07-20 16:04:33.296402] - Reason: [Invalid Password]
+2025-07-20T16:04:49+0000 - audit - INFO {Dummy-2581} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-20 16:04:49.596630]
+2025-07-20T16:04:49+0000 - faraday.server.app - INFO {Dummy-2581} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-20 16:04:49.596630]
+2025-07-22T14:49:06+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T14:49:06+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T14:49:11+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T14:49:11+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T14:51:43+0000 - faraday.server.app - WARNING {Dummy-12} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-22T15:02:15+0000 - audit - INFO {Dummy-40} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-22 15:02:15.663183]
+2025-07-22T15:02:15+0000 - faraday.server.app - INFO {Dummy-40} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-22 15:02:15.663183]
+2025-07-22T16:00:09+0000 - faraday.server.app - WARNING {Dummy-130} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-22T16:10:59+0000 - faraday.server.app - WARNING {Dummy-151} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-22T16:55:03+0000 - faraday.server.app - WARNING {Dummy-289} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-22T17:01:08+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T17:01:08+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T17:01:13+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T17:01:13+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T17:34:17+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T17:34:17+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T17:34:22+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T17:34:22+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T18:11:31+0000 - faraday.server.app - INFO {MainThread} [pid:24] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T18:11:31+0000 - faraday.server.app - INFO {MainThread} [pid:24] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T18:11:42+0000 - faraday.server.app - INFO {MainThread} [pid:28] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-22T18:11:42+0000 - faraday.server.app - INFO {MainThread} [pid:28] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-22T18:11:53+0000 - audit - INFO {Dummy-18} [pid:24] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-22 18:11:53.550843]
+2025-07-22T18:11:53+0000 - faraday.server.app - INFO {Dummy-18} [pid:24] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-22 18:11:53.550843]
+2025-07-22T18:40:07+0000 - faraday.server.app - WARNING {Dummy-138} [pid:24] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-24T14:39:10+0000 - audit - INFO {Dummy-643} [pid:24] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 14:39:10.767195]
+2025-07-24T14:39:10+0000 - faraday.server.app - INFO {Dummy-643} [pid:24] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 14:39:10.767195]
+2025-07-24T15:53:24+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-24T15:53:24+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-24T15:53:34+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-24T15:53:34+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-24T16:39:23+0000 - audit - INFO {Dummy-191} [pid:23] [app.py:345 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-24 16:39:23.084352]
+2025-07-24T16:39:23+0000 - faraday.server.app - INFO {Dummy-191} [pid:23] [app.py:346 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-24 16:39:23.084352]
+2025-07-24T16:39:25+0000 - audit - INFO {Dummy-191} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 16:39:25.854478]
+2025-07-24T16:39:25+0000 - faraday.server.app - INFO {Dummy-191} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 16:39:25.854478]
+2025-07-24T16:39:29+0000 - audit - INFO {Dummy-191} [pid:23] [app.py:345 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-24 16:39:29.133786]
+2025-07-24T16:39:29+0000 - faraday.server.app - INFO {Dummy-191} [pid:23] [app.py:346 - expire_session()]  User [faraday] logged out from IP [172.23.0.1] at [2025-07-24 16:39:29.133786]
+2025-07-24T16:39:41+0000 - audit - INFO {Dummy-191} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 16:39:41.288054]
+2025-07-24T16:39:41+0000 - faraday.server.app - INFO {Dummy-191} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 16:39:41.288054]

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion Réelle - Faraday</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .test-section h3 {
+            color: #444;
+            margin-top: 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .credentials {
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        .data-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .login-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .login-form input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Test de Connexion Réelle aux Données Faraday</h1>
+        
+        <!-- Section de connexion -->
+        <div class="test-section">
+            <h3>🔐 Authentification</h3>
+            <div class="credentials">
+                <strong>Identifiants par défaut:</strong><br>
+                Nom d'utilisateur: <code>faraday</code><br>
+                Mot de passe: <code>faraday</code>
+            </div>
+            
+            <div class="login-form">
+                <input type="text" id="username" placeholder="Nom d'utilisateur" value="faraday">
+                <input type="password" id="password" placeholder="Mot de passe" value="faraday">
+                <button onclick="testAuthentication()">Tester Connexion</button>
+                <button onclick="clearResults()">Effacer</button>
+            </div>
+            
+            <div id="auth-status"></div>
+        </div>
+
+        <!-- Section de test de l'API -->
+        <div class="test-section">
+            <h3>🌐 Test des Endpoints API</h3>
+            <button onclick="testApiEndpoints()">Tester tous les endpoints</button>
+            <button onclick="testSpecificEndpoint('info')">Test Info</button>
+            <button onclick="testSpecificEndpoint('ws')">Test Workspaces</button>
+            
+            <div id="api-status"></div>
+        </div>
+
+        <!-- Section de statistiques en temps réel -->
+        <div class="test-section">
+            <h3>📊 Données Réelles du Serveur</h3>
+            <button onclick="loadRealData()">Charger Données Réelles</button>
+            <button onclick="loadMockData()">Charger Données Simulées</button>
+            
+            <div id="data-comparison"></div>
+            
+            <div class="stats-grid" id="stats-grid">
+                <!-- Les stats seront ajoutées ici -->
+            </div>
+            
+            <div class="data-display" id="raw-data">
+                <em>Cliquez sur "Charger Données Réelles" pour voir les données...</em>
+            </div>
+        </div>
+
+        <!-- Section de validation -->
+        <div class="test-section">
+            <h3>✅ Validation de la Connexion</h3>
+            <button onclick="performFullValidation()">Validation Complète</button>
+            
+            <div id="validation-results"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script>
+        let isRealConnection = false;
+        let lastTestData = null;
+
+        // Test d'authentification
+        async function testAuthentication() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const statusDiv = document.getElementById('auth-status');
+            
+            statusDiv.innerHTML = '<div class="status info">🔄 Test de connexion en cours...</div>';
+            
+            try {
+                const result = await window.faradayAPI.login(username, password);
+                
+                if (result.success) {
+                    const connectionType = result.mock ? 'Simulée' : 'Réelle';
+                    const statusClass = result.mock ? 'warning' : 'success';
+                    
+                    isRealConnection = !result.mock;
+                    
+                    statusDiv.innerHTML = `
+                        <div class="status ${statusClass}">
+                            ✅ Connexion ${connectionType} réussie!<br>
+                            Utilisateur: ${result.user.username}<br>
+                            Version: ${result.version}<br>
+                            Mode: ${result.mock ? 'Développement/Simulation' : 'Production/Réel'}
+                        </div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Échec de la connexion</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Erreur: ${error.message}</div>`;
+            }
+        }
+
+        // Test des endpoints API
+        async function testApiEndpoints() {
+            const statusDiv = document.getElementById('api-status');
+            statusDiv.innerHTML = '<div class="status info">🔄 Test des endpoints en cours...</div>';
+            
+            const endpoints = [
+                { name: 'Info', endpoint: 'info' },
+                { name: 'Workspaces', endpoint: 'ws' },
+                { name: 'Session', endpoint: 'session' }
+            ];
+            
+            let results = [];
+            
+            for (const test of endpoints) {
+                try {
+                    const result = await window.faradayAPI.get(test.endpoint);
+                    results.push(`✅ ${test.name}: OK (${JSON.stringify(result).length} bytes)`);
+                } catch (error) {
+                    results.push(`❌ ${test.name}: ${error.message}`);
+                }
+            }
+            
+            statusDiv.innerHTML = `
+                <div class="status ${results.some(r => r.includes('❌')) ? 'warning' : 'success'}">
+                    ${results.join('<br>')}
+                </div>
+            `;
+        }
+
+        // Test d'un endpoint spécifique
+        async function testSpecificEndpoint(endpoint) {
+            const statusDiv = document.getElementById('api-status');
+            statusDiv.innerHTML = `<div class="status info">🔄 Test de /${endpoint}...</div>`;
+            
+            try {
+                const result = await window.faradayAPI.get(endpoint);
+                statusDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ Endpoint /${endpoint} accessible<br>
+                        Réponse: ${JSON.stringify(result, null, 2).slice(0, 200)}...
+                    </div>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Erreur /${endpoint}: ${error.message}</div>`;
+            }
+        }
+
+        // Charger des données réelles
+        async function loadRealData() {
+            const statusDiv = document.getElementById('data-comparison');
+            const rawDataDiv = document.getElementById('raw-data');
+            const statsGrid = document.getElementById('stats-grid');
+            
+            statusDiv.innerHTML = '<div class="status info">🔄 Chargement des données réelles...</div>';
+            
+            try {
+                // Forcer la vraie connexion
+                window.faradayAPI.credentials = btoa('faraday:faraday');
+                
+                const [info, workspaces] = await Promise.all([
+                    window.faradayAPI.get('info'),
+                    window.faradayAPI.get('ws')
+                ]);
+                
+                lastTestData = { info, workspaces, type: 'real' };
+                
+                // Afficher les statistiques
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${workspaces.length || 0}</div>
+                        <div class="stat-label">Workspaces</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${info.Version || 'N/A'}</div>
+                        <div class="stat-label">Version Faraday</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${Object.keys(info).length}</div>
+                        <div class="stat-label">Infos Server</div>
+                    </div>
+                `;
+                
+                // Afficher les données brutes
+                rawDataDiv.innerHTML = `
+                    <strong>📡 DONNÉES RÉELLES DU SERVEUR:</strong><br>
+                    <strong>Info Server:</strong><br>
+                    ${JSON.stringify(info, null, 2)}<br><br>
+                    <strong>Workspaces:</strong><br>
+                    ${JSON.stringify(workspaces, null, 2)}
+                `;
+                
+                statusDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ Données réelles chargées avec succès!<br>
+                        Source: API Faraday en direct<br>
+                        Workspaces trouvés: ${workspaces.length}
+                    </div>
+                `;
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">❌ Impossible de charger les données réelles: ${error.message}</div>`;
+                loadMockData(); // Fallback
+            }
+        }
+
+        // Charger des données simulées pour comparaison
+        function loadMockData() {
+            const statusDiv = document.getElementById('data-comparison');
+            const rawDataDiv = document.getElementById('raw-data');
+            const statsGrid = document.getElementById('stats-grid');
+            
+            const mockData = {
+                info: { Version: '5.14.1 (Mock)', 'Faraday Server': 'Mock Mode' },
+                workspaces: [
+                    { name: 'demo-workspace', id: 1 },
+                    { name: 'test-workspace', id: 2 }
+                ],
+                type: 'mock'
+            };
+            
+            lastTestData = mockData;
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${mockData.workspaces.length}</div>
+                    <div class="stat-label">Workspaces (Mock)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${mockData.info.Version}</div>
+                    <div class="stat-label">Version (Mock)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">Simulé</div>
+                    <div class="stat-label">Mode</div>
+                </div>
+            `;
+            
+            rawDataDiv.innerHTML = `
+                <strong>🎭 DONNÉES SIMULÉES:</strong><br>
+                <strong>Info Mock:</strong><br>
+                ${JSON.stringify(mockData.info, null, 2)}<br><br>
+                <strong>Workspaces Mock:</strong><br>
+                ${JSON.stringify(mockData.workspaces, null, 2)}
+            `;
+            
+            statusDiv.innerHTML = `
+                <div class="status warning">
+                    ⚠️ Données simulées chargées<br>
+                    Source: Mode développement<br>
+                    Workspaces simulés: ${mockData.workspaces.length}
+                </div>
+            `;
+        }
+
+        // Validation complète
+        async function performFullValidation() {
+            const resultsDiv = document.getElementById('validation-results');
+            resultsDiv.innerHTML = '<div class="status info">🔄 Validation complète en cours...</div>';
+            
+            const tests = [];
+            
+            // Test 1: Authentification
+            try {
+                const authResult = await window.faradayAPI.login('faraday', 'faraday');
+                tests.push({
+                    name: 'Authentification',
+                    success: authResult.success,
+                    details: authResult.mock ? 'Mode simulé' : 'Connexion réelle',
+                    isReal: !authResult.mock
+                });
+            } catch (error) {
+                tests.push({
+                    name: 'Authentification',
+                    success: false,
+                    details: error.message,
+                    isReal: false
+                });
+            }
+            
+            // Test 2: API Info
+            try {
+                const info = await window.faradayAPI.get('info');
+                const hasRealData = info.Version && !info.Version.includes('Mock');
+                tests.push({
+                    name: 'API Info',
+                    success: true,
+                    details: `Version: ${info.Version}`,
+                    isReal: hasRealData
+                });
+            } catch (error) {
+                tests.push({
+                    name: 'API Info',
+                    success: false,
+                    details: error.message,
+                    isReal: false
+                });
+            }
+            
+            // Test 3: Workspaces
+            try {
+                const workspaces = await window.faradayAPI.get('ws');
+                const hasRealWorkspaces = Array.isArray(workspaces) && workspaces.length > 0;
+                tests.push({
+                    name: 'Workspaces',
+                    success: true,
+                    details: `${workspaces.length} workspace(s) trouvé(s)`,
+                    isReal: hasRealWorkspaces
+                });
+            } catch (error) {
+                tests.push({
+                    name: 'Workspaces',
+                    success: false,
+                    details: error.message,
+                    isReal: false
+                });
+            }
+            
+            // Analyse des résultats
+            const successCount = tests.filter(t => t.success).length;
+            const realDataCount = tests.filter(t => t.isReal).length;
+            const totalTests = tests.length;
+            
+            let overallStatus = 'error';
+            let overallMessage = '';
+            
+            if (successCount === totalTests && realDataCount === totalTests) {
+                overallStatus = 'success';
+                overallMessage = '✅ CONNEXION RÉELLE CONFIRMÉE - Toutes les données proviennent du serveur Faraday';
+            } else if (successCount === totalTests && realDataCount === 0) {
+                overallStatus = 'warning';
+                overallMessage = '⚠️ MODE SIMULATION - Toutes les données sont simulées';
+            } else if (successCount > 0) {
+                overallStatus = 'info';
+                overallMessage = `🔄 CONNEXION MIXTE - ${realDataCount}/${totalTests} tests avec données réelles`;
+            } else {
+                overallStatus = 'error';
+                overallMessage = '❌ ÉCHEC DE CONNEXION - Aucun test réussi';
+            }
+            
+            // Affichage des résultats
+            const testResults = tests.map(test => `
+                ${test.success ? '✅' : '❌'} ${test.name}: ${test.details} ${test.isReal ? '(Réel)' : '(Simulé)'}
+            `).join('<br>');
+            
+            resultsDiv.innerHTML = `
+                <div class="status ${overallStatus}">
+                    <strong>${overallMessage}</strong><br><br>
+                    ${testResults}<br><br>
+                    <strong>Résumé:</strong><br>
+                    Tests réussis: ${successCount}/${totalTests}<br>
+                    Données réelles: ${realDataCount}/${totalTests}<br>
+                    État de la connexion: ${realDataCount === totalTests ? 'RÉELLE' : realDataCount > 0 ? 'MIXTE' : 'SIMULÉE'}
+                </div>
+            `;
+        }
+
+        // Effacer les résultats
+        function clearResults() {
+            document.getElementById('auth-status').innerHTML = '';
+            document.getElementById('api-status').innerHTML = '';
+            document.getElementById('data-comparison').innerHTML = '';
+            document.getElementById('validation-results').innerHTML = '';
+            document.getElementById('raw-data').innerHTML = '<em>Résultats effacés...</em>';
+            document.getElementById('stats-grid').innerHTML = '';
+        }
+
+        // Initialisation
+        window.addEventListener('load', function() {
+            console.log('Page de test de connexion réelle chargée');
+            console.log('URL actuelle:', window.location.href);
+            console.log('API Faraday disponible:', !!window.faradayAPI);
+        });
+    </script>
+</body>
+</html>

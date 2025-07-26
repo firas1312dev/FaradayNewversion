@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Workspaces - Faraday (Version Fixée)</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .toolbar {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .search-box::after {
+            content: '\f002';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .workspace-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workspace-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .workspace-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .workspace-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .workspace-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .workspace-info {
+            margin: 15px 0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .workspace-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2em;
+            color: #718096;
+        }
+
+        .error, .success, .info {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .info {
+            background: #bee3f8;
+            color: #2b6cb0;
+            border: 1px solid #90cdf4;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Gestion des Workspaces Faraday</h1>
+            <p>Interface complète de gestion des espaces de travail avec données réelles</p>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchWorkspaces" placeholder="Rechercher un workspace...">
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-success" onclick="loadWorkspaces()">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+                <button class="btn btn-primary" onclick="showCreateModal()">
+                    <i class="fas fa-plus"></i> Créer Workspace
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3 id="totalWorkspaces">-</h3>
+                    <p>Total Workspaces</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeWorkspaces">-</h3>
+                    <p>Workspaces Actifs</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="connectionStatus">🔄</h3>
+                    <p>Statut Connexion</p>
+                </div>
+            </div>
+
+            <div id="loadingMessage" class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <div>Chargement des workspaces...</div>
+            </div>
+            
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            <div id="successMessage" class="success" style="display: none;"></div>
+            <div id="infoMessage" class="info" style="display: none;"></div>
+            
+            <div id="workspacesList" class="workspace-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal pour créer/éditer un workspace -->
+    <div id="workspaceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Créer un Workspace</h2>
+            <form id="workspaceForm">
+                <div class="form-group">
+                    <label for="workspaceName">Nom du Workspace *</label>
+                    <input type="text" id="workspaceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="workspaceDescription">Description</label>
+                    <textarea id="workspaceDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="workspaceCustomer">Client</label>
+                    <input type="text" id="workspaceCustomer">
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="workspaceActive" checked>
+                        <label for="workspaceActive">Workspace actif</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="workspacePublic">
+                        <label for="workspacePublic">Workspace public</label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration (identique à celle qui fonctionne)
+        class WorkspaceFaradayAPI {
+            constructor() {
+                this.baseURL = 'http://localhost:8082';
+                this.credentials = btoa('faraday:faraday');
+                this.workspaces = [];
+                
+                console.log('🔧 API Workspaces Configuration:', {
+                    baseURL: this.baseURL,
+                    credentialsSet: !!this.credentials
+                });
+            }
+
+            async getWorkspaces() {
+                try {
+                    const response = await fetch(`${this.baseURL}/_api/v3/ws`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Basic ${this.credentials}`,
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache'
+                        },
+                        mode: 'cors'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('📊 Workspaces data received:', data);
+                    
+                    return data.rows || data || [];
+                } catch (error) {
+                    console.error('❌ Error fetching workspaces:', error);
+                    throw error;
+                }
+            }
+
+            async createWorkspace(workspaceData) {
+                try {
+                    const response = await fetch(`${this.baseURL}/_api/v3/ws`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Basic ${this.credentials}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(workspaceData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('❌ Error creating workspace:', error);
+                    throw error;
+                }
+            }
+
+            async deleteWorkspace(workspaceId) {
+                try {
+                    const response = await fetch(`${this.baseURL}/_api/v3/ws/${workspaceId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Basic ${this.credentials}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    return true;
+                } catch (error) {
+                    console.error('❌ Error deleting workspace:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // Instance API globale
+        const api = new WorkspaceFaradayAPI();
+        let currentWorkspaces = [];
+
+        // Fonctions utilitaires
+        function showMessage(message, type) {
+            const errorEl = document.getElementById('errorMessage');
+            const successEl = document.getElementById('successMessage');
+            const infoEl = document.getElementById('infoMessage');
+            
+            // Cacher tous les messages
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+            infoEl.style.display = 'none';
+            
+            if (type === 'error') {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+            } else if (type === 'success') {
+                successEl.textContent = message;
+                successEl.style.display = 'block';
+            } else {
+                infoEl.textContent = message;
+                infoEl.style.display = 'block';
+            }
+            
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+                successEl.style.display = 'none';
+                infoEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
+        }
+
+        function updateStats() {
+            const total = currentWorkspaces.length;
+            const active = currentWorkspaces.filter(ws => ws.active).length;
+            
+            document.getElementById('totalWorkspaces').textContent = total;
+            document.getElementById('activeWorkspaces').textContent = active;
+            document.getElementById('connectionStatus').textContent = '✅';
+        }
+
+        function renderWorkspaces(workspaces = currentWorkspaces) {
+            const container = document.getElementById('workspacesList');
+            
+            if (workspaces.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Aucun workspace trouvé</h3>
+                        <p>Créez votre premier workspace pour commencer</p>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="fas fa-plus"></i> Créer Workspace
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = workspaces.map(workspace => `
+                <div class="workspace-card">
+                    <div class="workspace-header">
+                        <div class="workspace-name">${workspace.name}</div>
+                        <div class="workspace-status ${workspace.active ? 'status-active' : 'status-inactive'}">
+                            ${workspace.active ? 'Actif' : 'Inactif'}
+                        </div>
+                    </div>
+                    
+                    <div class="workspace-info">
+                        <div class="info-item">
+                            <span class="info-label">ID:</span>
+                            <span class="info-value">${workspace.id}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Client:</span>
+                            <span class="info-value">${workspace.customer || 'Non spécifié'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Public:</span>
+                            <span class="info-value">${workspace.public ? 'Oui' : 'Non'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Description:</span>
+                            <span class="info-value">${workspace.description || 'Aucune description'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="workspace-actions">
+                        <button class="btn btn-primary" onclick="selectWorkspace('${workspace.name}')">
+                            <i class="fas fa-eye"></i> Ouvrir
+                        </button>
+                        <button class="btn btn-secondary" onclick="editWorkspace(${workspace.id})">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteWorkspace(${workspace.id}, '${workspace.name}')">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadWorkspaces() {
+            showLoading(true);
+            document.getElementById('connectionStatus').textContent = '🔄';
+            
+            try {
+                const workspaces = await api.getWorkspaces();
+                currentWorkspaces = workspaces;
+                
+                renderWorkspaces();
+                updateStats();
+                showMessage(`✅ ${workspaces.length} workspaces chargés avec succès`, 'success');
+                
+            } catch (error) {
+                showMessage(`❌ Erreur lors du chargement: ${error.message}`, 'error');
+                document.getElementById('connectionStatus').textContent = '❌';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function selectWorkspace(workspaceName) {
+            showMessage(`🔄 Sélection du workspace: ${workspaceName}`, 'info');
+            // TODO: Implémenter la navigation vers le workspace
+            console.log('Selected workspace:', workspaceName);
+        }
+
+        function editWorkspace(workspaceId) {
+            const workspace = currentWorkspaces.find(ws => ws.id === workspaceId);
+            if (workspace) {
+                showMessage(`🔧 Édition du workspace: ${workspace.name}`, 'info');
+                // TODO: Implémenter l'édition
+                console.log('Edit workspace:', workspace);
+            }
+        }
+
+        async function deleteWorkspace(workspaceId, workspaceName) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer le workspace "${workspaceName}" ?`)) {
+                try {
+                    await api.deleteWorkspace(workspaceId);
+                    showMessage(`✅ Workspace "${workspaceName}" supprimé`, 'success');
+                    loadWorkspaces(); // Recharger la liste
+                } catch (error) {
+                    showMessage(`❌ Erreur lors de la suppression: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function showCreateModal() {
+            document.getElementById('modalTitle').textContent = 'Créer un Workspace';
+            document.getElementById('workspaceForm').reset();
+            document.getElementById('workspaceModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('workspaceModal').style.display = 'none';
+        }
+
+        // Gestionnaire du formulaire
+        document.getElementById('workspaceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const workspaceData = {
+                name: document.getElementById('workspaceName').value,
+                description: document.getElementById('workspaceDescription').value,
+                customer: document.getElementById('workspaceCustomer').value,
+                active: document.getElementById('workspaceActive').checked,
+                public: document.getElementById('workspacePublic').checked
+            };
+            
+            try {
+                await api.createWorkspace(workspaceData);
+                showMessage(`✅ Workspace "${workspaceData.name}" créé avec succès`, 'success');
+                closeModal();
+                loadWorkspaces(); // Recharger la liste
+            } catch (error) {
+                showMessage(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        });
+
+        // Recherche
+        document.getElementById('searchWorkspaces').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredWorkspaces = currentWorkspaces.filter(ws => 
+                ws.name.toLowerCase().includes(searchTerm) ||
+                (ws.description && ws.description.toLowerCase().includes(searchTerm)) ||
+                (ws.customer && ws.customer.toLowerCase().includes(searchTerm))
+            );
+            renderWorkspaces(filteredWorkspaces);
+        });
+
+        // Fermer modal en cliquant à l'extérieur
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('workspaceModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Chargement initial
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadWorkspaces();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

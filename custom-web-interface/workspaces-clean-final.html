@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Workspaces - Faraday (Clean)</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .toolbar {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2em;
+            color: #718096;
+        }
+
+        .error, .success {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        #results {
+            margin-top: 30px;
+        }
+
+        .result-item {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Gestion des Workspaces</h1>
+            <p>Interface de gestion complète des espaces de travail Faraday (Version Clean)</p>
+        </div>
+
+        <div class="toolbar">
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-primary" onclick="testConnection()">
+                    <i class="fas fa-wifi"></i> Tester Connexion
+                </button>
+                <button class="btn btn-success" onclick="loadWorkspaces()">
+                    <i class="fas fa-sync-alt"></i> Charger Workspaces
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3 id="totalWorkspaces">-</h3>
+                    <p>Total Workspaces</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="connectionStatus">🔄</h3>
+                    <p>Statut Connexion</p>
+                </div>
+            </div>
+
+            <div id="loadingMessage" class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                <div>Chargement en cours...</div>
+            </div>
+            
+            <div id="errorMessage" class="error" style="display: none;"></div>
+            <div id="successMessage" class="success" style="display: none;"></div>
+            
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration forcée - VERSION CLEAN
+        const API_CONFIG = {
+            isUsingProxy: window.location.port === '8888',
+            proxyURL: 'http://localhost:8082/proxy',
+            directURL: 'http://localhost:5985',
+            credentials: btoa('faraday:faraday')
+        };
+
+        // URL de base calculée
+        const baseURL = API_CONFIG.isUsingProxy ? API_CONFIG.proxyURL : API_CONFIG.directURL;
+        const apiURL = `${baseURL}/_api/v3/ws`;
+
+        console.log('🔧 Configuration API Clean:', {
+            port: window.location.port,
+            isUsingProxy: API_CONFIG.isUsingProxy,
+            baseURL: baseURL,
+            apiURL: apiURL
+        });
+
+        // Fonctions utilitaires
+        function showMessage(message, type) {
+            const errorEl = document.getElementById('errorMessage');
+            const successEl = document.getElementById('successMessage');
+            
+            if (type === 'error') {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+            } else {
+                successEl.textContent = message;
+                successEl.style.display = 'block';
+                errorEl.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+                successEl.style.display = 'none';
+            }, 5000);
+        }
+
+        function addResult(title, message, type = 'info', details = null) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            
+            let content = `<h4>${title}</h4><p>${message}</p>`;
+            if (details) {
+                content += `<div class="debug-info">${JSON.stringify(details, null, 2)}</div>`;
+            }
+            
+            div.innerHTML = content;
+            results.appendChild(div);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
+        }
+
+        function updateConnectionStatus(status) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.textContent = status;
+        }
+
+        // Test de connexion
+        async function testConnection() {
+            showLoading(true);
+            updateConnectionStatus('🔄');
+            
+            try {
+                addResult('🧪 Test de Connexion', `Tentative vers: ${apiURL}`, 'info');
+                
+                const response = await fetch(apiURL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Cache-Control': 'no-cache'
+                    },
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+
+                if (response.ok) {
+                    updateConnectionStatus('✅');
+                    showMessage('✅ Connexion réussie !', 'success');
+                    addResult('✅ Connexion Réussie', `Status: ${response.status} ${response.statusText}`, 'success');
+                    
+                    const data = await response.json();
+                    addResult('📋 Données Reçues', `${data.rows?.length || 0} workspaces trouvés`, 'success', {
+                        totalRows: data.rows?.length || 0,
+                        dataKeys: Object.keys(data),
+                        firstWorkspace: data.rows?.[0]?.name || 'Aucun'
+                    });
+                    
+                    return data;
+                } else {
+                    updateConnectionStatus('❌');
+                    const errorText = await response.text();
+                    showMessage(`❌ Erreur ${response.status}: ${errorText}`, 'error');
+                    addResult('❌ Erreur HTTP', `${response.status} ${response.statusText}`, 'error');
+                    return null;
+                }
+                
+            } catch (error) {
+                updateConnectionStatus('💀');
+                showMessage(`❌ Erreur de connexion: ${error.message}`, 'error');
+                addResult('💀 Exception', error.message, 'error', {
+                    errorType: error.name,
+                    errorMessage: error.message
+                });
+                return null;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Chargement des workspaces
+        async function loadWorkspaces() {
+            const data = await testConnection();
+            
+            if (data && data.rows) {
+                document.getElementById('totalWorkspaces').textContent = data.rows.length;
+                
+                // Afficher les workspaces
+                addResult('📋 Liste des Workspaces', `${data.rows.length} workspaces chargés`, 'success');
+                
+                data.rows.forEach((workspace, index) => {
+                    addResult(
+                        `📁 Workspace ${index + 1}`,
+                        `Nom: ${workspace.name} | Actif: ${workspace.active ? 'Oui' : 'Non'}`,
+                        'info',
+                        {
+                            id: workspace.id,
+                            name: workspace.name,
+                            description: workspace.description,
+                            active: workspace.active,
+                            customer: workspace.customer
+                        }
+                    );
+                });
+            }
+        }
+
+        // Test automatique au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addResult('🚀 Démarrage', 'Interface chargée - Test automatique...', 'info');
+                testConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

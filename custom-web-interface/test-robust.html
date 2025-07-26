@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Faraday Robuste</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            margin: -20px -20px 20px -20px;
+            padding: 30px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .status.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .metric:last-child { border-bottom: none; }
+        .metric-label { font-weight: bold; color: #666; }
+        .metric-value { font-size: 18px; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Test API Faraday Robuste</h1>
+            <p>Interface de test avec fallbacks automatiques</p>
+        </div>
+
+        <!-- Status de connexion -->
+        <div id="connectionStatus" class="status info">
+            ⏳ Initialisation...
+        </div>
+
+        <!-- Section Login -->
+        <div class="test-section">
+            <h3>🔐 Authentification</h3>
+            <div>
+                <input type="text" id="username" placeholder="Nom d'utilisateur" value="faraday">
+                <input type="password" id="password" placeholder="Mot de passe" value="changeme">
+                <button onclick="testLogin()">Se connecter</button>
+            </div>
+            <div id="loginResult"></div>
+        </div>
+
+        <!-- Section Tests -->
+        <div class="test-section">
+            <h3>🧪 Tests de connectivité</h3>
+            <button onclick="testConnection()">Test de connexion</button>
+            <button onclick="testWorkspaces()">Charger les workspaces</button>
+            <button onclick="testHosts()">Charger les hosts</button>
+            <button onclick="testVulnerabilities()">Charger les vulnérabilités</button>
+            <button onclick="runAllTests()">Tous les tests</button>
+        </div>
+
+        <!-- Résultats -->
+        <div class="grid">
+            <div class="card">
+                <h4>📊 Informations de connexion</h4>
+                <div id="connectionInfo">Aucune information disponible</div>
+            </div>
+
+            <div class="card">
+                <h4>📁 Workspaces</h4>
+                <div id="workspacesResult">Aucun workspace chargé</div>
+            </div>
+
+            <div class="card">
+                <h4>🖥️ Hosts</h4>
+                <div id="hostsResult">Aucun host chargé</div>
+            </div>
+
+            <div class="card">
+                <h4>🔍 Vulnérabilités</h4>
+                <div id="vulnerabilitiesResult">Aucune vulnérabilité chargée</div>
+            </div>
+        </div>
+
+        <!-- Log console -->
+        <div class="test-section">
+            <h3>📝 Log de débogage</h3>
+            <button onclick="clearLog()">Effacer</button>
+            <div id="debugLog" class="log">Initialisation du log...\n</div>
+        </div>
+    </div>
+
+    <script src="js/robust-api.js"></script>
+    <script>
+        // Rediriger les logs console vers notre interface
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        function addToLog(message, type = 'log') {
+            const logElement = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'warn' ? '⚠️' : type === 'error' ? '❌' : '📝';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '), 'log');
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToLog(args.join(' '), 'warn');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+
+        // Fonctions de test
+        async function testConnection() {
+            console.log('🔍 Test de connexion demandé');
+            try {
+                const result = await faradayAPI.testConnection();
+                updateConnectionStatus(result);
+                updateConnectionInfo();
+                return result;
+            } catch (error) {
+                console.error('Erreur test connexion:', error);
+                updateStatus('error', '❌ Erreur lors du test de connexion');
+            }
+        }
+
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                updateStatus('warning', '⚠️ Veuillez saisir nom d\'utilisateur et mot de passe');
+                return;
+            }
+
+            console.log('🔐 Tentative de connexion...');
+            try {
+                const result = await faradayAPI.login(username, password);
+                
+                const loginResult = document.getElementById('loginResult');
+                if (result.success) {
+                    loginResult.innerHTML = `
+                        <div class="status success">
+                            ✅ ${result.message}${result.mock ? ' (Mode simulation)' : ''}
+                            <br>Utilisateur: ${result.user.username}
+                        </div>
+                    `;
+                    updateConnectionInfo();
+                } else {
+                    loginResult.innerHTML = `
+                        <div class="status error">❌ Échec de la connexion</div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur login:', error);
+                document.getElementById('loginResult').innerHTML = `
+                    <div class="status error">❌ Erreur: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function testWorkspaces() {
+            console.log('📁 Test workspaces...');
+            try {
+                const workspaces = await faradayAPI.getWorkspaces();
+                const result = document.getElementById('workspacesResult');
+                result.innerHTML = workspaces.map(ws => 
+                    `<div class="metric">
+                        <span class="metric-label">${ws.name}</span>
+                        <span class="metric-value">ID: ${ws.id}</span>
+                    </div>`
+                ).join('');
+                updateStatus('success', `✅ ${workspaces.length} workspaces chargés`);
+            } catch (error) {
+                console.error('Erreur workspaces:', error);
+                updateStatus('error', '❌ Erreur chargement workspaces');
+            }
+        }
+
+        async function testHosts() {
+            console.log('🖥️ Test hosts...');
+            try {
+                const hosts = await faradayAPI.getHosts();
+                const result = document.getElementById('hostsResult');
+                result.innerHTML = hosts.map(host => 
+                    `<div class="metric">
+                        <span class="metric-label">${host.ip}</span>
+                        <span class="metric-value">${host.hostname || 'N/A'}</span>
+                    </div>`
+                ).join('');
+                updateStatus('success', `✅ ${hosts.length} hosts chargés`);
+            } catch (error) {
+                console.error('Erreur hosts:', error);
+                updateStatus('error', '❌ Erreur chargement hosts');
+            }
+        }
+
+        async function testVulnerabilities() {
+            console.log('🔍 Test vulnérabilités...');
+            try {
+                const vulns = await faradayAPI.getVulnerabilities();
+                const result = document.getElementById('vulnerabilitiesResult');
+                result.innerHTML = vulns.map(vuln => 
+                    `<div class="metric">
+                        <span class="metric-label">${vuln.name}</span>
+                        <span class="metric-value">${vuln.severity}</span>
+                    </div>`
+                ).join('');
+                updateStatus('success', `✅ ${vulns.length} vulnérabilités chargées`);
+            } catch (error) {
+                console.error('Erreur vulnérabilités:', error);
+                updateStatus('error', '❌ Erreur chargement vulnérabilités');
+            }
+        }
+
+        async function runAllTests() {
+            console.log('🧪 Exécution de tous les tests...');
+            updateStatus('info', '⏳ Exécution des tests...');
+            
+            await testConnection();
+            await testWorkspaces();
+            await testHosts();
+            await testVulnerabilities();
+            
+            updateStatus('success', '✅ Tous les tests terminés');
+        }
+
+        function updateConnectionStatus(result) {
+            const status = document.getElementById('connectionStatus');
+            if (result.success) {
+                if (result.mock) {
+                    status.className = 'status warning';
+                    status.textContent = '⚠️ Mode simulation actif - Pas de connexion directe au serveur';
+                } else {
+                    status.className = 'status success';
+                    status.textContent = '✅ Connexion directe au serveur Faraday réussie';
+                }
+            } else {
+                status.className = 'status error';
+                status.textContent = '❌ Impossible de se connecter au serveur';
+            }
+        }
+
+        function updateConnectionInfo() {
+            const status = faradayAPI.getConnectionStatus();
+            const info = document.getElementById('connectionInfo');
+            info.innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Mode</span>
+                    <span class="metric-value">${status.mode}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">URL</span>
+                    <span class="metric-value">${status.baseURL}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Authentifié</span>
+                    <span class="metric-value">${status.hasCredentials ? 'Oui' : 'Non'}</span>
+                </div>
+            `;
+        }
+
+        function updateStatus(type, message) {
+            // Optionnel: afficher des messages de statut temporaires
+            console.log(`Status ${type}: ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('debugLog').textContent = 'Log effacé.\n';
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Interface de test chargée');
+            updateConnectionInfo();
+        });
+    </script>
+</body>
+</html>

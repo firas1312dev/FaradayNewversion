@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Minimal API</title>
+</head>
+<body>
+    <h1>Test Minimal API</h1>
+    <div id="results"></div>
+    
+    <script>
+    async function testBasicAPI() {
+        const results = document.getElementById('results');
+        
+        // Test 1: Info endpoint
+        try {
+            results.innerHTML += '<h3>Test 1: Info endpoint</h3>';
+            const response1 = await fetch('http://localhost:8082/_api/v3/info', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const text1 = await response1.text();
+            results.innerHTML += `<p>Info response: <pre>${text1}</pre></p>`;
+            
+            const json1 = JSON.parse(text1);
+            results.innerHTML += `<p>✅ Info JSON OK: ${JSON.stringify(json1)}</p>`;
+            
+        } catch (e) {
+            results.innerHTML += `<p>❌ Info error: ${e.message}</p>`;
+        }
+        
+        // Test 2: Workspaces endpoint
+        try {
+            results.innerHTML += '<h3>Test 2: Workspaces endpoint</h3>';
+            const response2 = await fetch('http://localhost:8082/_api/v3/ws', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const text2 = await response2.text();
+            results.innerHTML += `<p>Workspaces response (${text2.length} chars): <pre>${text2.substring(0, 200)}...</pre></p>`;
+            
+            const json2 = JSON.parse(text2);
+            results.innerHTML += `<p>✅ Workspaces JSON OK: ${json2.rows ? json2.rows.length : 'unknown'} workspaces</p>`;
+            
+        } catch (e) {
+            results.innerHTML += `<p>❌ Workspaces error: ${e.message}</p>`;
+        }
+        
+        // Test 3: API avec classe
+        try {
+            results.innerHTML += '<h3>Test 3: Via classe API</h3>';
+            
+            // Simuler la classe API
+            const apiTest = {
+                baseURL: 'http://localhost:8082',
+                apiVersion: '_api/v3',
+                credentials: btoa('faraday:faraday'),
+                
+                getURL(endpoint) {
+                    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+                    return `${this.baseURL}/${this.apiVersion}/${cleanEndpoint}`;
+                },
+                
+                async get(endpoint) {
+                    const url = this.getURL(endpoint);
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Basic ${this.credentials}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    return await response.json();
+                }
+            };
+            
+            const infoResult = await apiTest.get('info');
+            results.innerHTML += `<p>✅ API classe info: ${JSON.stringify(infoResult)}</p>`;
+            
+            const wsResult = await apiTest.get('ws');
+            results.innerHTML += `<p>✅ API classe workspaces: ${wsResult.rows ? wsResult.rows.length : 'unknown'} workspaces</p>`;
+            
+        } catch (e) {
+            results.innerHTML += `<p>❌ API classe error: ${e.message}</p>`;
+        }
+    }
+    
+    // Lancer le test
+    testBasicAPI();
+    </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+[2025-07-11 09:30:23,478: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-11 09:30:23,482: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-11 09:30:23,483: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-11 09:30:25,676: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-11 09:30:25,705: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-11 11:20:03,921: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-11 11:20:03,924: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-11 11:20:03,925: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-11 11:20:05,384: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-11 11:20:05,409: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-11 12:42:11,791: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-11 12:42:11,793: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-11 12:42:11,795: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-11 12:42:12,794: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-11 12:42:12,807: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 14:49:11,923: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 14:49:11,926: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 14:49:11,928: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-22 14:49:13,602: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 14:49:13,621: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 17:01:14,152: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 17:01:14,154: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 17:01:14,156: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-22 17:01:22,580: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 17:01:22,707: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 17:34:22,931: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 17:34:22,932: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 17:34:22,933: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-22 17:34:28,078: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 17:34:28,115: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 18:11:45,637: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 18:11:45,639: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-22 18:11:45,641: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-22 18:11:53,413: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-22 18:11:53,455: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-24 15:53:36,929: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-24 15:53:36,932: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/app/utils.py:203: CDeprecationWarning: 
+    The 'CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS' setting is deprecated and scheduled for removal in
+    version 6.0.0. Use the result_backend_transport_options instead
+
+  deprecated.warn(description=f'The {setting!r} setting',
+
+[2025-07-24 15:53:36,934: WARNING/MainProcess] Please run `celery upgrade settings path/to/settings.py` to avoid these warnings and to allow a smoother upgrade to Celery 6.0.
+[2025-07-24 15:53:42,538: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+
+[2025-07-24 15:53:42,611: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+whether broker connection retries are made during startup in Celery 6.0 and above.
+If you wish to retain the existing behavior for retrying connections on startup,
+you should set broker_connection_retry_on_startup to True.
+  warnings.warn(
+

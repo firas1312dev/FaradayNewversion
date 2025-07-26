@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Direct API Faraday</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Direct API Faraday</h1>
+        <p>Ce test vérifie directement les appels API pour diagnostiquer le problème de format JSON.</p>
+        
+        <div class="test-section">
+            <h3>1. Test Proxy CORS</h3>
+            <button onclick="testProxy()">🌐 Tester Proxy Info</button>
+            <button onclick="testProxyWS()">📁 Tester Proxy Workspaces</button>
+            <button onclick="testProxyWithAuth()">🔑 Tester avec Auth Headers</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Test Direct Faraday</h3>
+            <button onclick="testDirectInfo()">🔗 Tester Direct Info</button>
+            <button onclick="testDirectWS()">📁 Tester Direct Workspaces</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Test avec Fetch Raw</h3>
+            <button onclick="testRawFetch()">⚡ Test Fetch Raw</button>
+            <button onclick="testWithCORS()">🌐 Test CORS Mode</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info', title = '') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            div.innerHTML = `[${timestamp}] ${title ? title + '\n' : ''}${message}`;
+            resultsDiv.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${title} ${message}`);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        // Test 1: Proxy Info
+        async function testProxy() {
+            addResult('🔄 Test du proxy CORS pour endpoint info...', 'info', 'PROXY INFO');
+            
+            try {
+                const response = await fetch('http://localhost:8082/_api/v3/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors',
+                    credentials: 'include'
+                });
+                
+                addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+                addResult(`Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`, 'info');
+                
+                const contentType = response.headers.get('content-type') || '';
+                addResult(`Content-Type: ${contentType}`, 'info');
+                
+                if (contentType.includes('application/json')) {
+                    const data = await response.json();
+                    addResult(`✅ JSON reçu: ${JSON.stringify(data, null, 2)}`, 'success', 'PROXY INFO SUCCESS');
+                } else {
+                    const text = await response.text();
+                    addResult(`❌ HTML/Text reçu: ${text.substring(0, 500)}...`, 'error', 'PROXY INFO ERROR');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur: ${error.message}`, 'error', 'PROXY INFO ERROR');
+            }
+        }
+        
+        // Test 2: Proxy Workspaces
+        async function testProxyWS() {
+            addResult('🔄 Test du proxy CORS pour endpoint workspaces...', 'info', 'PROXY WS');
+            
+            try {
+                const response = await fetch('http://localhost:8082/_api/v3/ws', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors',
+                    credentials: 'include'
+                });
+                
+                addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+                addResult(`Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`, 'info');
+                
+                const contentType = response.headers.get('content-type') || '';
+                addResult(`Content-Type: ${contentType}`, 'info');
+                
+                if (contentType.includes('application/json')) {
+                    const data = await response.json();
+                    addResult(`✅ JSON reçu: ${JSON.stringify(data, null, 2)}`, 'success', 'PROXY WS SUCCESS');
+                } else {
+                    const text = await response.text();
+                    addResult(`❌ HTML/Text reçu: ${text.substring(0, 500)}...`, 'error', 'PROXY WS ERROR');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur: ${error.message}`, 'error', 'PROXY WS ERROR');
+            }
+        }
+        
+        // Test 3: Proxy avec headers Auth
+        async function testProxyWithAuth() {
+            addResult('🔄 Test du proxy avec headers Auth explicites...', 'info', 'PROXY AUTH');
+            
+            try {
+                const authHeader = 'Basic ' + btoa('faraday:faraday');
+                addResult(`Auth Header: ${authHeader}`, 'info');
+                
+                const response = await fetch('http://localhost:8082/_api/v3/ws', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': authHeader,
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+                
+                addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+                
+                const text = await response.text();
+                addResult(`Raw Response: ${text.substring(0, 200)}...`, 'info');
+                
+                try {
+                    const data = JSON.parse(text);
+                    addResult(`✅ JSON parsé: ${JSON.stringify(data, null, 2)}`, 'success', 'PROXY AUTH SUCCESS');
+                } catch (parseError) {
+                    addResult(`❌ Pas du JSON: ${text.substring(0, 500)}...`, 'error', 'PROXY AUTH ERROR');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur: ${error.message}`, 'error', 'PROXY AUTH ERROR');
+            }
+        }
+        
+        // Test 4: Direct Info
+        async function testDirectInfo() {
+            addResult('🔄 Test direct Faraday pour endpoint info...', 'info', 'DIRECT INFO');
+            
+            try {
+                const response = await fetch('http://localhost:5985/_api/v3/info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+                
+                addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+                
+                const contentType = response.headers.get('content-type') || '';
+                addResult(`Content-Type: ${contentType}`, 'info');
+                
+                const text = await response.text();
+                try {
+                    const data = JSON.parse(text);
+                    addResult(`✅ JSON reçu: ${JSON.stringify(data, null, 2)}`, 'success', 'DIRECT INFO SUCCESS');
+                } catch (parseError) {
+                    addResult(`❌ Pas du JSON: ${text.substring(0, 500)}...`, 'error', 'DIRECT INFO ERROR');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur (CORS attendue): ${error.message}`, 'error', 'DIRECT INFO ERROR');
+            }
+        }
+        
+        // Test 5: Direct Workspaces
+        async function testDirectWS() {
+            addResult('🔄 Test direct Faraday pour endpoint workspaces...', 'info', 'DIRECT WS');
+            
+            try {
+                const response = await fetch('http://localhost:5985/_api/v3/ws', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('faraday:faraday'),
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+                
+                addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+                
+                const text = await response.text();
+                try {
+                    const data = JSON.parse(text);
+                    addResult(`✅ JSON reçu: ${JSON.stringify(data, null, 2)}`, 'success', 'DIRECT WS SUCCESS');
+                } catch (parseError) {
+                    addResult(`❌ Pas du JSON: ${text.substring(0, 500)}...`, 'error', 'DIRECT WS ERROR');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur (CORS attendue): ${error.message}`, 'error', 'DIRECT WS ERROR');
+            }
+        }
+        
+        // Test 6: Raw Fetch
+        async function testRawFetch() {
+            addResult('🔄 Test fetch raw minimal...', 'info', 'RAW FETCH');
+            
+            try {
+                const response = await fetch('http://localhost:8082/_api/v3/info');
+                
+                addResult(`Status: ${response.status}`, 'info');
+                addResult(`Type: ${response.type}`, 'info');
+                addResult(`OK: ${response.ok}`, 'info');
+                
+                const text = await response.text();
+                addResult(`Raw: ${text}`, response.ok ? 'success' : 'error', 'RAW FETCH RESULT');
+            } catch (error) {
+                addResult(`❌ Erreur: ${error.message}`, 'error', 'RAW FETCH ERROR');
+            }
+        }
+        
+        // Test 7: CORS Mode
+        async function testWithCORS() {
+            addResult('🔄 Test avec différents modes CORS...', 'info', 'CORS TEST');
+            
+            const modes = ['cors', 'no-cors', 'same-origin'];
+            
+            for (const mode of modes) {
+                try {
+                    addResult(`Tentative mode: ${mode}`, 'info');
+                    
+                    const response = await fetch('http://localhost:8082/_api/v3/info', {
+                        method: 'GET',
+                        mode: mode,
+                        headers: mode !== 'no-cors' ? {
+                            'Authorization': 'Basic ' + btoa('faraday:faraday')
+                        } : {}
+                    });
+                    
+                    if (mode === 'no-cors') {
+                        addResult(`✅ Mode ${mode}: Réponse opaque reçue`, 'success');
+                    } else {
+                        const text = await response.text();
+                        addResult(`✅ Mode ${mode}: ${text.substring(0, 100)}...`, 'success');
+                    }
+                } catch (error) {
+                    addResult(`❌ Mode ${mode}: ${error.message}`, 'error');
+                }
+            }
+        }
+        
+        // Auto-start test
+        window.onload = function() {
+            addResult('🔄 Test automatique démarré...', 'info', 'AUTO START');
+            setTimeout(testProxy, 1000);
+        };
+    </script>
+</body>
+</html>
