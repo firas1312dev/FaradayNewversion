@@ -2618,9 +2618,6 @@
                         <button class="btn btn-secondary" onclick="clearData()">
                             <i class="fas fa-trash"></i> Effacer
                         </button>
-                        <button class="btn btn-info" onclick="testCORSProxy()" title="Tester la connexion au proxy CORS">
-                            <i class="fas fa-network-wired"></i> Test Proxy
-                        </button>
                         
                         <!-- Barre de recherche locale améliorée -->
                         <div class="search-box" style="margin-left: 20px;">
@@ -3602,8 +3599,6 @@
             clearData();
 
             try {
-                console.log('🔄 Tentative de connexion à:', `${API_CONFIG.baseURL}/_api/v3/ws`);
-                
                 const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws`, {
                     method: 'GET',
                     headers: {
@@ -3612,93 +3607,36 @@
                     }
                 });
 
-                console.log('📡 Réponse reçue:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    headers: Object.fromEntries(response.headers.entries()),
-                    url: response.url
-                });
-
-                if (!response.ok) {
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.rows && Array.isArray(data.rows)) {
+                        workspacesData = data.rows;
+                        displayWorkspaces(workspacesData);
+                        updateStats(workspacesData);
+                        updateConnectionStatus('connected', `${workspacesData.length} workspaces`);
+                        showAlert(
+                            `✅ ${workspacesData.length} workspaces chargés`, 
+                            'success', 
+                            'fas fa-check-circle'
+                        );
+                    } else {
+                        throw new Error('Format données inattendu');
+                    }
+                } else {
                     const errorText = await response.text();
-                    console.error('❌ Erreur HTTP:', errorText);
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
-
-                // Vérifier le type de contenu
-                const contentType = response.headers.get('content-type');
-                console.log('📄 Type de contenu:', contentType);
-
-                const responseText = await response.text();
-                console.log('📝 Réponse brute (100 premiers caractères):', responseText.substring(0, 100));
-
-                if (!contentType || !contentType.includes('application/json')) {
-                    console.error('❌ La réponse n\'est pas du JSON:', contentType);
-                    console.error('📄 Contenu complet:', responseText.substring(0, 500));
-                    
-                    if (responseText.includes('<!doctype') || responseText.includes('<html')) {
-                        throw new Error('🌐 Le serveur renvoie du HTML au lieu de JSON. Vérifiez que le proxy CORS (faraday-cors-proxy.py) est démarré et configuré correctement.');
-                    } else {
-                        throw new Error(`🔧 Type de contenu inattendu: ${contentType}. Vérifiez la configuration de l\'API.`);
-                    }
-                }
-
-                let data;
-                try {
-                    data = JSON.parse(responseText);
-                    console.log('✅ Données JSON parsées:', data);
-                } catch (parseError) {
-                    console.error('❌ Erreur parsing JSON:', parseError);
-                    console.error('📄 Contenu qui n\'a pas pu être parsé:', responseText.substring(0, 500));
-                    throw new Error(`🔧 Impossible de parser la réponse JSON: ${parseError.message}`);
-                }
-
-                if (data.rows && Array.isArray(data.rows)) {
-                    workspacesData = data.rows;
-                    displayWorkspaces(workspacesData);
-                    updateStats(workspacesData);
-                    updateConnectionStatus('connected', `${workspacesData.length} workspaces`);
-                    showAlert(
-                        `✅ ${workspacesData.length} workspaces chargés`, 
-                        'success', 
-                        'fas fa-check-circle'
-                    );
-                } else if (Array.isArray(data)) {
-                    workspacesData = data;
-                    displayWorkspaces(workspacesData);
-                    updateStats(workspacesData);
-                    updateConnectionStatus('connected', `${workspacesData.length} workspaces`);
-                    showAlert(
-                        `✅ ${workspacesData.length} workspaces chargés`, 
-                        'success', 
-                        'fas fa-check-circle'
-                    );
-                } else {
-                    console.warn('⚠️ Format de données inattendu:', data);
-                    workspacesData = [];
-                    displayWorkspaces([]);
-                    updateStats([]);
-                    updateConnectionStatus('warning', 'Format inattendu');
-                    showAlert('⚠️ Format de données inattendu reçu de l\'API', 'warning');
-                }
-
             } catch (error) {
-                console.error('❌ Erreur chargement workspaces:', error);
-                updateConnectionStatus('disconnected', 'Erreur connexion');
-                
-                let errorMessage = error.message;
-                if (error.message.includes('Failed to fetch')) {
-                    errorMessage = '🔌 Impossible de se connecter au proxy CORS. Vérifiez que faraday-cors-proxy.py est démarré sur le port 8082.';
-                }
-                
-                showAlert(errorMessage, 'error', 'fas fa-exclamation-triangle');
-                
-                workspacesData = [];
-                displayWorkspaces([]);
-                updateStats([]);
+                updateConnectionStatus('disconnected', 'Erreur chargement');
+                showAlert(
+                    `❌ Erreur: ${error.message}`, 
+                    'error', 
+                    'fas fa-exclamation-triangle'
+                );
             } finally {
-                isLoading = false;
                 showLoading(false);
+                isLoading = false;
             }
         }
 
@@ -4822,234 +4760,17 @@
             }
         }
 
-        // Gestion des vulnérabilités
+        // Fonctions placeholder pour les vulnérabilités
         function showCreateVulnModal() {
-            if (!selectedWorkspace) {
-                showVulnAlert('⚠️ Veuillez d\'abord sélectionner un workspace', 'warning');
-                return;
-            }
-            
-            // Réinitialiser le formulaire
-            document.getElementById('vulnerabilityForm').reset();
-            document.getElementById('vulnModalTitle').textContent = 'Nouvelle Vulnérabilité';
-            document.getElementById('vulnSubmitBtn').textContent = 'Créer';
-            
-            isVulnEditMode = false;
-            editingVulnId = null;
-            
-            // Remplir le workspace
-            populateWorkspaceSelect();
-            
-            // Afficher le modal
-            document.getElementById('vulnerabilityModal').style.display = 'block';
+            showVulnAlert('⚠️ Fonctionnalité en développement', 'info');
         }
 
         function editVuln(vulnId) {
-            console.log('🔧 Édition vulnérabilité:', vulnId);
-            
-            // Trouver la vulnérabilité dans les données
-            const vuln = vulnerabilitiesData.find(v => (v.id || v._id) == vulnId);
-            if (!vuln) {
-                showVulnAlert('❌ Vulnérabilité introuvable', 'error');
-                return;
-            }
-            
-            // Remplir le formulaire avec les données existantes
-            document.getElementById('vulnName').value = vuln.name || vuln.title || '';
-            document.getElementById('vulnDescription').value = vuln.description || vuln.desc || '';
-            document.getElementById('vulnSeverity').value = vuln.severity || 'info';
-            document.getElementById('vulnStatus').value = vuln.status || 'open';
-            document.getElementById('vulnType').value = vuln.type || 'Vulnerability';
-            document.getElementById('vulnHost').value = vuln.target || vuln.host || '';
-            document.getElementById('vulnService').value = vuln.service || '';
-            document.getElementById('vulnData').value = vuln.data || '';
-            document.getElementById('vulnCVE').value = vuln.cve || '';
-            document.getElementById('vulnCWE').value = vuln.cwe || '';
-            document.getElementById('vulnReferences').value = vuln.references || '';
-            
-            // Configuration du modal pour l'édition
-            document.getElementById('vulnModalTitle').textContent = 'Modifier Vulnérabilité';
-            document.getElementById('vulnSubmitBtn').textContent = 'Modifier';
-            
-            isVulnEditMode = true;
-            editingVulnId = vulnId;
-            
-            // Remplir le workspace
-            populateWorkspaceSelect();
-            
-            // Afficher le modal
-            document.getElementById('vulnerabilityModal').style.display = 'block';
+            showVulnAlert('⚠️ Fonctionnalité en développement', 'info');
         }
 
         function deleteVuln(vulnId) {
-            console.log('🗑️ Suppression vulnérabilité:', vulnId);
-            
-            // Trouver la vulnérabilité dans les données
-            const vuln = vulnerabilitiesData.find(v => (v.id || v._id) == vulnId);
-            if (!vuln) {
-                showVulnAlert('❌ Vulnérabilité introuvable', 'error');
-                return;
-            }
-            
-            const vulnName = vuln.name || vuln.title || `Vulnérabilité ${vulnId}`;
-            
-            if (confirm(`Êtes-vous sûr de vouloir supprimer "${vulnName}" ?\n\nCette action est irréversible.`)) {
-                performVulnDeletion(vulnId);
-            }
-        }
-
-        async function performVulnDeletion(vulnId) {
-            try {
-                showVulnAlert('🔄 Suppression en cours...', 'info');
-                
-                // Tenter la suppression via l'API
-                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns/${vulnId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Basic ${API_CONFIG.credentials}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    // Suppression réussie via API
-                    showVulnAlert('✅ Vulnérabilité supprimée avec succès', 'success');
-                    
-                    // Recharger les vulnérabilités
-                    await loadVulnerabilitiesFromAPI();
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-            } catch (error) {
-                console.warn('⚠️ Suppression API échouée, suppression locale:', error);
-                
-                // Suppression locale des données
-                vulnerabilitiesData = vulnerabilitiesData.filter(v => (v.id || v._id) != vulnId);
-                filteredVulnerabilitiesData = filteredVulnerabilitiesData.filter(v => (v.id || v._id) != vulnId);
-                
-                // Re-afficher les vulnérabilités
-                displayVulnerabilities(filteredVulnerabilitiesData);
-                updateVulnResultCount(filteredVulnerabilitiesData.length);
-                
-                showVulnAlert('✅ Vulnérabilité supprimée localement', 'success');
-            }
-        }
-
-        function closeVulnModal() {
-            document.getElementById('vulnerabilityModal').style.display = 'none';
-            document.getElementById('vulnerabilityForm').reset();
-            isVulnEditMode = false;
-            editingVulnId = null;
-        }
-
-        function populateWorkspaceSelect() {
-            const select = document.getElementById('vulnWorkspaceSelect');
-            if (!select || !workspacesData) return;
-            
-            // Si pas de workspace sélectionné, utiliser le premier disponible
-            if (!selectedWorkspace && workspacesData.length > 0) {
-                selectedWorkspace = workspacesData[0].name;
-                select.value = selectedWorkspace;
-            }
-        }
-
-        // Gestionnaire de soumission du formulaire de vulnérabilité
-        document.addEventListener('DOMContentLoaded', function() {
-            const vulnForm = document.getElementById('vulnerabilityForm');
-            if (vulnForm) {
-                vulnForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    await submitVulnerabilityForm();
-                });
-            }
-        });
-
-        async function submitVulnerabilityForm() {
-            const formData = new FormData(document.getElementById('vulnerabilityForm'));
-            const vulnData = Object.fromEntries(formData.entries());
-            
-            // Validation basique
-            if (!vulnData.name || !vulnData.severity) {
-                showVulnAlert('❌ Veuillez remplir au moins le nom et la sévérité', 'error');
-                return;
-            }
-            
-            if (!selectedWorkspace) {
-                showVulnAlert('❌ Veuillez sélectionner un workspace', 'error');
-                return;
-            }
-            
-            try {
-                showVulnAlert('🔄 ' + (isVulnEditMode ? 'Modification' : 'Création') + ' en cours...', 'info');
-                
-                let response;
-                let url = `${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns`;
-                
-                if (isVulnEditMode) {
-                    url += `/${editingVulnId}`;
-                    response = await fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Basic ${API_CONFIG.credentials}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(vulnData)
-                    });
-                } else {
-                    response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Basic ${API_CONFIG.credentials}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(vulnData)
-                    });
-                }
-
-                if (response.ok) {
-                    const actionText = isVulnEditMode ? 'modifiée' : 'créée';
-                    showVulnAlert(`✅ Vulnérabilité ${actionText} avec succès`, 'success');
-                    
-                    closeVulnModal();
-                    
-                    // Recharger les vulnérabilités
-                    await loadVulnerabilitiesFromAPI();
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-            } catch (error) {
-                console.warn('⚠️ API échouée, sauvegarde locale:', error);
-                
-                // Sauvegarde locale
-                const newVuln = {
-                    id: isVulnEditMode ? editingVulnId : Date.now(),
-                    ...vulnData,
-                    created: new Date().toISOString(),
-                    status: vulnData.status || 'open'
-                };
-                
-                if (isVulnEditMode) {
-                    // Mise à jour locale
-                    const index = vulnerabilitiesData.findIndex(v => (v.id || v._id) == editingVulnId);
-                    if (index !== -1) {
-                        vulnerabilitiesData[index] = { ...vulnerabilitiesData[index], ...newVuln };
-                    }
-                } else {
-                    // Ajout local
-                    vulnerabilitiesData.unshift(newVuln);
-                }
-                
-                filteredVulnerabilitiesData = vulnerabilitiesData;
-                displayVulnerabilities(vulnerabilitiesData);
-                updateVulnResultCount(vulnerabilitiesData.length);
-                
-                const actionText = isVulnEditMode ? 'modifiée' : 'créée';
-                showVulnAlert(`✅ Vulnérabilité ${actionText} localement`, 'success');
-                
-                closeVulnModal();
-            }
+            showVulnAlert('⚠️ Fonctionnalité en développement', 'info');
         }
 
         // DEBUG FUNCTIONS
@@ -5060,62 +4781,6 @@
             console.log('- vulnerabilitiesData:', vulnerabilitiesData);
             
             showVulnAlert('🐛 Informations de debug affichées dans la console', 'info');
-        }
-
-        async function testCORSProxy() {
-            console.log('🔧 Test du proxy CORS...');
-            
-            try {
-                // Test simple du proxy
-                const proxyResponse = await fetch('http://localhost:8082/health', {
-                    method: 'GET'
-                });
-                
-                console.log('🏥 Santé du proxy:', {
-                    status: proxyResponse.status,
-                    statusText: proxyResponse.statusText
-                });
-                
-                if (proxyResponse.ok) {
-                    console.log('✅ Le proxy CORS répond correctement');
-                } else {
-                    console.error('❌ Le proxy CORS ne répond pas correctement');
-                }
-                
-                // Test de l'API Faraday via le proxy
-                const apiResponse = await fetch(`${API_CONFIG.baseURL}/_api/v3/info`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Basic ${API_CONFIG.credentials}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                console.log('🔍 Test API via proxy:', {
-                    status: apiResponse.status,
-                    statusText: apiResponse.statusText,
-                    headers: Object.fromEntries(apiResponse.headers.entries())
-                });
-                
-                const apiResponseText = await apiResponse.text();
-                console.log('📄 Réponse API (100 premiers caractères):', apiResponseText.substring(0, 100));
-                
-                if (apiResponse.ok && apiResponseText.includes('{')) {
-                    console.log('✅ L\'API Faraday répond correctement via le proxy');
-                    showAlert('✅ Le proxy CORS et l\'API Faraday fonctionnent correctement', 'success');
-                } else {
-                    console.error('❌ L\'API Faraday ne répond pas correctement via le proxy');
-                    showAlert(`❌ Problème avec l'API Faraday: ${apiResponse.status} ${apiResponse.statusText}`, 'error');
-                }
-                
-            } catch (error) {
-                console.error('❌ Erreur lors du test du proxy CORS:', error);
-                if (error.message.includes('Failed to fetch')) {
-                    showAlert('❌ Impossible de se connecter au proxy CORS sur localhost:8082. Vérifiez que faraday-cors-proxy.py est démarré.', 'error');
-                } else {
-                    showAlert(`❌ Erreur du test: ${error.message}`, 'error');
-                }
-            }
         }
 
         // Auto-refresh every 30 seconds

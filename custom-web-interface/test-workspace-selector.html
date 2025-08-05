@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sélecteur Workspace - Vulnérabilités</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 5px;
+            min-width: 200px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Test Sélecteur Workspace - Vulnérabilités</h1>
+        
+        <div class="test-section">
+            <h3>📡 Connexion API</h3>
+            <p>URL: <span id="apiUrl">http://localhost:8082</span></p>
+            <p>Status: <span id="connectionStatus">Non testé</span></p>
+            <button onclick="testConnection()">🔍 Tester Connexion</button>
+            <button onclick="loadWorkspaces()">📁 Charger Workspaces</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🗂️ Sélecteur de Workspace</h3>
+            <label for="vulnWorkspaceSelect">Workspace:</label>
+            <select id="vulnWorkspaceSelect" onchange="onWorkspaceSelected()">
+                <option value="">Sélectionner un workspace...</option>
+            </select>
+            <button onclick="debugWorkspaceSelector()">🐛 Debug Sélecteur</button>
+            <div id="workspaceResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🛡️ Test Vulnérabilités</h3>
+            <p>Workspace sélectionné: <span id="selectedWorkspaceName">Aucun</span></p>
+            <button id="loadVulnBtn" disabled onclick="loadVulnerabilities()">📋 Charger Vulnérabilités</button>
+            <button id="createVulnBtn" disabled onclick="createTestVuln()">➕ Créer Vulnérabilité Test</button>
+            <div id="vulnResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🐛 Debug Console</h3>
+            <button onclick="clearDebug()">🗑️ Effacer</button>
+            <div id="debugConsole" class="debug-info"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration API
+        const API_CONFIG = {
+            baseURL: 'http://localhost:8082',
+            credentials: btoa('faraday:faraday')
+        };
+
+        // Variables globales
+        let workspacesData = [];
+        let selectedWorkspace = null;
+
+        // Fonctions utilitaires
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const debugConsole = document.getElementById('debugConsole');
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            debugConsole.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            debugConsole.scrollTop = debugConsole.scrollHeight;
+            console.log(`[${type}]`, message);
+        }
+
+        function showStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function clearDebug() {
+            document.getElementById('debugConsole').innerHTML = '';
+        }
+
+        // Test de connexion
+        async function testConnection() {
+            log('🔄 Test de connexion à l\'API Faraday...');
+            document.getElementById('connectionStatus').textContent = 'Test en cours...';
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/info`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('connectionStatus').textContent = 'Connecté ✅';
+                    showStatus('connectionResult', `✅ Connexion réussie - Version: ${data.Version || 'N/A'}`, 'success');
+                    log(`✅ Connexion réussie - Version: ${data.Version || 'N/A'}`, 'success');
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                document.getElementById('connectionStatus').textContent = 'Échec ❌';
+                showStatus('connectionResult', `❌ Erreur: ${error.message}`, 'error');
+                log(`❌ Erreur de connexion: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // Chargement des workspaces
+        async function loadWorkspaces() {
+            log('🔄 Chargement des workspaces...');
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    workspacesData = data.rows || data || [];
+                    
+                    log(`✅ ${workspacesData.length} workspaces chargés`, 'success');
+                    showStatus('workspaceResult', `✅ ${workspacesData.length} workspaces chargés`, 'success');
+                    
+                    updateWorkspaceSelector();
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`❌ Erreur lors du chargement des workspaces: ${error.message}`, 'error');
+                showStatus('workspaceResult', `❌ Erreur: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // Mise à jour du sélecteur
+        function updateWorkspaceSelector() {
+            const select = document.getElementById('vulnWorkspaceSelect');
+            
+            if (!select) {
+                log('❌ Élément vulnWorkspaceSelect introuvable!', 'error');
+                return;
+            }
+
+            // Vider le select
+            select.innerHTML = '<option value="">Sélectionner un workspace...</option>';
+            
+            if (workspacesData.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Aucun workspace disponible';
+                option.disabled = true;
+                select.appendChild(option);
+                log('⚠️ Aucun workspace à afficher', 'error');
+                return;
+            }
+
+            // Ajouter tous les workspaces
+            workspacesData.forEach(workspace => {
+                const option = document.createElement('option');
+                option.value = workspace.name;
+                option.textContent = `${workspace.name} (${workspace.active ? 'Actif' : 'Inactif'})`;
+                select.appendChild(option);
+            });
+
+            log(`✅ Sélecteur mis à jour avec ${workspacesData.length} workspaces`, 'success');
+        }
+
+        // Sélection de workspace
+        function onWorkspaceSelected() {
+            const select = document.getElementById('vulnWorkspaceSelect');
+            selectedWorkspace = select.value;
+            
+            document.getElementById('selectedWorkspaceName').textContent = selectedWorkspace || 'Aucun';
+            
+            if (selectedWorkspace) {
+                log(`🎯 Workspace sélectionné: ${selectedWorkspace}`, 'success');
+                document.getElementById('loadVulnBtn').disabled = false;
+                document.getElementById('createVulnBtn').disabled = false;
+                
+                const workspaceInfo = workspacesData.find(ws => ws.name === selectedWorkspace);
+                if (workspaceInfo) {
+                    showStatus('vulnResult', 
+                        `✅ Workspace "${selectedWorkspace}" sélectionné\n` +
+                        `📝 Description: ${workspaceInfo.description || 'Aucune'}\n` +
+                        `📊 Statut: ${workspaceInfo.active ? 'Actif' : 'Inactif'}\n` +
+                        `🗓️ Créé: ${workspaceInfo.start_date || 'Non défini'}`, 
+                        'info'
+                    );
+                }
+            } else {
+                log('⚠️ Aucun workspace sélectionné', 'error');
+                document.getElementById('loadVulnBtn').disabled = true;
+                document.getElementById('createVulnBtn').disabled = true;
+                showStatus('vulnResult', '', 'info');
+            }
+        }
+
+        // Test chargement vulnérabilités
+        async function loadVulnerabilities() {
+            if (!selectedWorkspace) {
+                log('❌ Aucun workspace sélectionné', 'error');
+                return;
+            }
+
+            log(`🔄 Chargement des vulnérabilités pour ${selectedWorkspace}...`);
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const vulns = data.vulnerabilities || data.rows || data || [];
+                    
+                    log(`✅ ${vulns.length} vulnérabilités trouvées`, 'success');
+                    showStatus('vulnResult', 
+                        `✅ ${vulns.length} vulnérabilités chargées pour "${selectedWorkspace}"\n` +
+                        `📋 Liste: ${vulns.length > 0 ? vulns.slice(0, 3).map(v => v.name || 'Sans nom').join(', ') + (vulns.length > 3 ? '...' : '') : 'Aucune vulnérabilité'}`, 
+                        'success'
+                    );
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`❌ Erreur lors du chargement des vulnérabilités: ${error.message}`, 'error');
+                showStatus('vulnResult', `❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        // Créer vulnérabilité de test
+        async function createTestVuln() {
+            if (!selectedWorkspace) {
+                log('❌ Aucun workspace sélectionné', 'error');
+                return;
+            }
+
+            log(`🔄 Création d'une vulnérabilité de test dans ${selectedWorkspace}...`);
+            
+            const vulnData = {
+                name: `Test Vulnerability ${new Date().getTime()}`,
+                description: 'Vulnérabilité créée via le test du sélecteur',
+                severity: 'medium',
+                type: 'Vulnerability',
+                status: 'open'
+            };
+
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(vulnData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    log(`✅ Vulnérabilité créée avec succès - ID: ${result.id || 'N/A'}`, 'success');
+                    showStatus('vulnResult', `✅ Vulnérabilité "${vulnData.name}" créée avec succès!`, 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`❌ Erreur lors de la création: ${error.message}`, 'error');
+                showStatus('vulnResult', `❌ Erreur: ${error.message}`, 'error');
+            }
+        }
+
+        // Debug du sélecteur
+        function debugWorkspaceSelector() {
+            log('🐛 === DEBUG SÉLECTEUR WORKSPACE ===');
+            
+            const select = document.getElementById('vulnWorkspaceSelect');
+            log(`🔍 Élément select trouvé: ${!!select}`);
+            
+            if (select) {
+                log(`📋 Nombre d'options: ${select.options.length}`);
+                log(`📝 Contenu HTML du select: ${select.innerHTML}`);
+                log(`🎯 Valeur sélectionnée: "${select.value}"`);
+            }
+            
+            log(`💾 workspacesData en mémoire: ${JSON.stringify(workspacesData, null, 2)}`);
+            log(`📏 Nombre de workspaces en mémoire: ${workspacesData.length}`);
+            log(`🎯 selectedWorkspace: "${selectedWorkspace}"`);
+            
+            // Test de force brute
+            log('🔄 Test de rechargement forcé...');
+            workspacesData = [];
+            loadWorkspaces();
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Page de test chargée');
+            log('📡 Configuration API:', API_CONFIG);
+            
+            // Test automatique au chargement
+            setTimeout(async () => {
+                const connected = await testConnection();
+                if (connected) {
+                    setTimeout(() => loadWorkspaces(), 1000);
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

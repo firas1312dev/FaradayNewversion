@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Module Vulnérabilités Faraday</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.info { background: #e3f2fd; color: #1976d2; }
+        .status.success { background: #e8f5e8; color: #4caf50; }
+        .status.error { background: #ffebee; color: #f44336; }
+        .status.warning { background: #fff3e0; color: #ff9800; }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+
+        .btn-warning { background: #f59e0b; }
+        .btn-warning:hover { background: #d97706; }
+
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #dc2626; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .result-card h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .result-item.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #22c55e;
+        }
+
+        .result-item.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .result-item.info {
+            background: #eff6ff;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .workspace-selector {
+            margin: 15px 0;
+        }
+
+        .workspace-selector select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .vuln-form {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+
+        .loading i {
+            font-size: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Test Module Vulnérabilités</h1>
+            <p>Interface de test pour le module de gestion des vulnérabilités Faraday</p>
+        </div>
+
+        <!-- Status de connexion -->
+        <div id="connectionStatus" class="status info">
+            ⏳ Initialisation...
+        </div>
+
+        <!-- Section Tests de base -->
+        <div class="test-card">
+            <h3>🧪 Tests de connectivité</h3>
+            <button class="btn" onclick="testConnection()">Test connexion</button>
+            <button class="btn btn-success" onclick="loadWorkspaces()">Charger workspaces</button>
+            <button class="btn btn-warning" onclick="runAllTests()">Tous les tests</button>
+            
+            <div class="workspace-selector" id="workspaceSelector" style="display: none;">
+                <label for="workspaceSelect">Sélectionner un workspace:</label>
+                <select id="workspaceSelect" onchange="onWorkspaceSelected()">
+                    <option value="">-- Sélectionner --</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Section Tests vulnérabilités -->
+        <div class="test-card" id="vulnTestSection" style="display: none;">
+            <h3>🔍 Tests vulnérabilités</h3>
+            <button class="btn" onclick="loadVulnerabilities()">Charger vulnérabilités</button>
+            <button class="btn btn-success" onclick="showCreateVulnForm()">Créer vulnérabilité test</button>
+            <button class="btn btn-warning" onclick="testVulnCRUD()">Test CRUD complet</button>
+            
+            <div id="createVulnForm" class="vuln-form" style="display: none;">
+                <h4>Créer une vulnérabilité de test</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testVulnName">Nom:</label>
+                        <input type="text" id="testVulnName" value="Test SQL Injection">
+                    </div>
+                    <div class="form-group">
+                        <label for="testVulnSeverity">Sévérité:</label>
+                        <select id="testVulnSeverity">
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                            <option value="info">Info</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="testVulnDesc">Description:</label>
+                    <textarea id="testVulnDesc" rows="3">Vulnérabilité de test créée par l'interface de test</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testVulnTarget">Cible:</label>
+                        <input type="text" id="testVulnTarget" value="192.168.1.100">
+                    </div>
+                    <div class="form-group">
+                        <label for="testVulnService">Service:</label>
+                        <input type="text" id="testVulnService" value="http/80">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="createTestVuln()">Créer</button>
+                <button class="btn" onclick="hideCreateVulnForm()">Annuler</button>
+            </div>
+        </div>
+
+        <!-- Résultats -->
+        <div class="grid">
+            <div class="result-card">
+                <h3>📊 Résultats des tests</h3>
+                <div id="testResults">
+                    <div class="result-item info">En attente des tests...</div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>📋 Données récupérées</h3>
+                <div id="dataResults">
+                    <div class="result-item info">Aucune donnée chargée</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_CONFIG = {
+            baseURL: 'http://localhost:8082',
+            credentials: btoa('faraday:faraday')
+        };
+
+        let workspaces = [];
+        let selectedWorkspace = null;
+        let vulnerabilities = [];
+
+        // Fonctions utilitaires
+        function addResult(message, type = 'info') {
+            const container = document.getElementById('testResults');
+            const item = document.createElement('div');
+            item.className = `result-item ${type}`;
+            item.innerHTML = message;
+            container.appendChild(item);
+            
+            // Garder seulement les 10 derniers résultats
+            while (container.children.length > 10) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function addDataResult(message, type = 'info') {
+            const container = document.getElementById('dataResults');
+            const item = document.createElement('div');
+            item.className = `result-item ${type}`;
+            item.innerHTML = message;
+            container.appendChild(item);
+            
+            // Garder seulement les 10 derniers résultats
+            while (container.children.length > 10) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function updateConnectionStatus(status, message) {
+            const element = document.getElementById('connectionStatus');
+            element.className = `status ${status}`;
+            element.innerHTML = message;
+        }
+
+        // Tests de base
+        async function testConnection() {
+            updateConnectionStatus('info', '⏳ Test de connexion...');
+            addResult('🔄 Test de connexion vers l\'API...', 'info');
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/info`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    updateConnectionStatus('success', '✅ Connexion réussie');
+                    addResult(`✅ Connexion réussie - Version: ${data.Version || 'N/A'}`, 'success');
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateConnectionStatus('error', '❌ Connexion échouée');
+                addResult(`❌ Erreur de connexion: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function loadWorkspaces() {
+            addResult('🔄 Chargement des workspaces...', 'info');
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    workspaces = data.rows || data || [];
+                    
+                    addResult(`✅ ${workspaces.length} workspaces chargés`, 'success');
+                    addDataResult(`📁 Workspaces: ${workspaces.map(w => w.name).join(', ')}`, 'success');
+                    
+                    // Remplir le sélecteur
+                    const select = document.getElementById('workspaceSelect');
+                    select.innerHTML = '<option value="">-- Sélectionner --</option>';
+                    workspaces.forEach(ws => {
+                        const option = document.createElement('option');
+                        option.value = ws.name;
+                        option.textContent = ws.name;
+                        select.appendChild(option);
+                    });
+                    
+                    document.getElementById('workspaceSelector').style.display = 'block';
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                addResult(`❌ Erreur chargement workspaces: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        function onWorkspaceSelected() {
+            const select = document.getElementById('workspaceSelect');
+            selectedWorkspace = select.value;
+            
+            if (selectedWorkspace) {
+                addResult(`📂 Workspace sélectionné: ${selectedWorkspace}`, 'info');
+                document.getElementById('vulnTestSection').style.display = 'block';
+            } else {
+                document.getElementById('vulnTestSection').style.display = 'none';
+            }
+        }
+
+        // Tests vulnérabilités
+        async function loadVulnerabilities() {
+            if (!selectedWorkspace) {
+                addResult('❌ Aucun workspace sélectionné', 'error');
+                return;
+            }
+            
+            addResult(`🔄 Chargement vulnérabilités pour ${selectedWorkspace}...`, 'info');
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    vulnerabilities = data.vulnerabilities || data || [];
+                    
+                    addResult(`✅ ${vulnerabilities.length} vulnérabilités chargées`, 'success');
+                    
+                    if (vulnerabilities.length > 0) {
+                        const vulnInfo = vulnerabilities.slice(0, 3).map(v => 
+                            `${v.name} (${v.severity})`
+                        ).join(', ');
+                        addDataResult(`🛡️ Vulnérabilités: ${vulnInfo}${vulnerabilities.length > 3 ? '...' : ''}`, 'success');
+                    } else {
+                        addDataResult('📝 Aucune vulnérabilité trouvée', 'info');
+                    }
+                    
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                addResult(`❌ Erreur chargement vulnérabilités: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        function showCreateVulnForm() {
+            document.getElementById('createVulnForm').style.display = 'block';
+        }
+
+        function hideCreateVulnForm() {
+            document.getElementById('createVulnForm').style.display = 'none';
+        }
+
+        async function createTestVuln() {
+            if (!selectedWorkspace) {
+                addResult('❌ Aucun workspace sélectionné', 'error');
+                return;
+            }
+            
+            const vulnData = {
+                name: document.getElementById('testVulnName').value,
+                severity: document.getElementById('testVulnSeverity').value,
+                description: document.getElementById('testVulnDesc').value,
+                target: document.getElementById('testVulnTarget').value,
+                service: document.getElementById('testVulnService').value,
+                status: 'open',
+                type: 'Vulnerability'
+            };
+            
+            addResult('🔄 Création vulnérabilité de test...', 'info');
+            
+            try {
+                const response = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(vulnData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    addResult(`✅ Vulnérabilité créée avec ID: ${result.id || 'N/A'}`, 'success');
+                    addDataResult(`🛡️ Nouvelle vulnérabilité: ${vulnData.name}`, 'success');
+                    hideCreateVulnForm();
+                    
+                    // Recharger les vulnérabilités
+                    setTimeout(() => loadVulnerabilities(), 1000);
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+            } catch (error) {
+                addResult(`❌ Erreur création vulnérabilité: ${error.message}`, 'error');
+            }
+        }
+
+        async function testVulnCRUD() {
+            if (!selectedWorkspace) {
+                addResult('❌ Aucun workspace sélectionné', 'error');
+                return;
+            }
+            
+            addResult('🧪 Test CRUD complet des vulnérabilités...', 'info');
+            
+            // 1. Créer
+            const testVuln = {
+                name: 'Test CRUD Vulnerability',
+                severity: 'medium',
+                description: 'Vulnérabilité créée pour test CRUD',
+                target: '127.0.0.1',
+                service: 'test/80',
+                status: 'open',
+                type: 'Vulnerability'
+            };
+            
+            try {
+                // CREATE
+                const createResponse = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testVuln)
+                });
+                
+                if (!createResponse.ok) throw new Error(`Create failed: ${createResponse.status}`);
+                
+                const createdVuln = await createResponse.json();
+                const vulnId = createdVuln.id;
+                addResult(`✅ CREATE: Vulnérabilité créée (ID: ${vulnId})`, 'success');
+                
+                // READ
+                const readResponse = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns/${vulnId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (readResponse.ok) {
+                    addResult('✅ READ: Vulnérabilité lue avec succès', 'success');
+                } else {
+                    addResult('⚠️ READ: Erreur de lecture', 'error');
+                }
+                
+                // UPDATE
+                const updateData = { ...testVuln, name: 'Test CRUD Vulnerability - UPDATED', severity: 'high' };
+                const updateResponse = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns/${vulnId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (updateResponse.ok) {
+                    addResult('✅ UPDATE: Vulnérabilité modifiée avec succès', 'success');
+                } else {
+                    addResult('⚠️ UPDATE: Erreur de modification', 'error');
+                }
+                
+                // DELETE
+                const deleteResponse = await fetch(`${API_CONFIG.baseURL}/_api/v3/ws/${selectedWorkspace}/vulns/${vulnId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Basic ${API_CONFIG.credentials}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (deleteResponse.ok) {
+                    addResult('✅ DELETE: Vulnérabilité supprimée avec succès', 'success');
+                } else {
+                    addResult('⚠️ DELETE: Erreur de suppression', 'error');
+                }
+                
+                addResult('🎉 Test CRUD complet terminé!', 'success');
+                
+            } catch (error) {
+                addResult(`❌ Erreur dans test CRUD: ${error.message}`, 'error');
+            }
+        }
+
+        async function runAllTests() {
+            addResult('🚀 Lancement de tous les tests...', 'info');
+            
+            const connectionOk = await testConnection();
+            if (!connectionOk) return;
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const workspacesOk = await loadWorkspaces();
+            if (!workspacesOk || workspaces.length === 0) return;
+            
+            // Sélectionner le premier workspace
+            document.getElementById('workspaceSelect').value = workspaces[0].name;
+            onWorkspaceSelected();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await loadVulnerabilities();
+            
+            addResult('✅ Tous les tests terminés!', 'success');
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🧪 Interface de test vulnérabilités chargée');
+            updateConnectionStatus('info', '⏳ Prêt pour les tests...');
+        });
+    </script>
+</body>
+</html>

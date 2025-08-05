@@ -1,0 +1,6 @@
+name,severity,status,type,description,target,port,service,date
+SQL Injection,high,open,Web Application,SQL injection in login form,192.168.1.100,80,HTTP,2024-01-15
+XSS Reflected,medium,open,Web Application,Cross-site scripting vulnerability,192.168.1.101,443,HTTPS,2024-01-16
+Buffer Overflow,critical,closed,System,Buffer overflow in service,192.168.1.102,22,SSH,2024-01-17
+Weak Password,low,open,Authentication,Default password detected,192.168.1.103,21,FTP,2024-01-18
+Information Disclosure,info,open,Information,Sensitive data exposed,192.168.1.104,3389,RDP,2024-01-19

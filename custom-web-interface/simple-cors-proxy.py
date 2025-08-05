@@ -129,7 +129,7 @@ class SimpleCORSHandler(http.server.BaseHTTPRequestHandler):
             pass
 
 def main():
-    PORT = 8082
+    PORT = 8080
     
     print("🚀 Démarrage du proxy CORS simple pour Faraday")
     print(f"📡 Port: {PORT}")

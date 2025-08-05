@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faraday Planner - Gestion des Tâches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* FILTER BAR */
+        .filter-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select, .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 150px;
+        }
+
+        /* PROJECTS GRID */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .project-column {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-column:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-column:hover .add-task-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .project-header {
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+        }
+
+        .project-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .project-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .add-task-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-task-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(0) scale(1.1);
+        }
+
+        .tasks-container {
+            padding: 25px;
+            min-height: 200px;
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .task-card:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            transform: translateX(5px);
+        }
+
+        .task-card.high-priority {
+            border-left: 4px solid #f56565;
+        }
+
+        .task-card.medium-priority {
+            border-left: 4px solid #ed8936;
+        }
+
+        .task-card.low-priority {
+            border-left: 4px solid #68d391;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .task-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            transition: width 0.3s ease;
+        }
+
+        .task-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .task-card:hover .task-actions {
+            opacity: 1;
+        }
+
+        .task-action-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            color: #718096;
+            transition: color 0.3s ease;
+        }
+
+        .task-action-btn:hover {
+            color: #2d3748;
+        }
+
+        .milestone-card {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            border: none;
+        }
+
+        .milestone-card .task-title {
+            color: white;
+        }
+
+        .milestone-card .task-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #718096;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* LOADING & ALERTS */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .alert-info {
+            background: #ebf8ff;
+            color: #2a4365;
+            border: 1px solid #90cdf4;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-title">
+            <i class="fas fa-calendar-alt" style="color: #667eea; font-size: 32px;"></i>
+            <h1>Faraday Planner</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="window.location.href='index-new.html'">
+                <i class="fas fa-arrow-left"></i>
+                Retour
+            </button>
+            <button class="btn btn-primary" onclick="refreshData()">
+                <i class="fas fa-sync-alt"></i>
+                Actualiser
+            </button>
+            <button class="btn btn-primary" onclick="showCreateMilestoneModal()">
+                <i class="fas fa-flag"></i>
+                Nouveau Jalon
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label>Recherche</label>
+                <input type="text" class="filter-input" id="searchInput" placeholder="Rechercher tâches..." onkeyup="filterTasks()">
+            </div>
+            <div class="filter-group">
+                <label>Priorité</label>
+                <select class="filter-select" id="priorityFilter" onchange="filterTasks()">
+                    <option value="">Toutes</option>
+                    <option value="high">Haute</option>
+                    <option value="medium">Moyenne</option>
+                    <option value="low">Basse</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Statut</label>
+                <select class="filter-select" id="statusFilter" onchange="filterTasks()">
+                    <option value="">Tous</option>
+                    <option value="todo">À faire</option>
+                    <option value="in-progress">En cours</option>
+                    <option value="completed">Terminé</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Assigné à</label>
+                <select class="filter-select" id="assigneeFilter" onchange="filterTasks()">
+                    <option value="">Tous</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- PROJECTS GRID -->
+        <div id="projectsGrid" class="projects-grid">
+            <!-- Projects will be loaded here -->
+        </div>
+
+        <!-- LOADING STATE -->
+        <div id="loadingState" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <span>Chargement des projets...</span>
+        </div>
+    </div>
+
+    <!-- TASK MODAL -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="taskModalTitle">Nouvelle Tâche</h2>
+                <button class="close-btn" onclick="closeTaskModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskCommand">Nom de la tâche *</label>
+                        <input type="text" id="taskCommand" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" class="form-textarea" placeholder="Description détaillée de la tâche..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskStartDate">Date de début</label>
+                            <input type="datetime-local" id="taskStartDate" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskEndDate">Date de fin</label>
+                            <input type="datetime-local" id="taskEndDate" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskAssignedTo">Assigné à</label>
+                            <input type="text" id="taskAssignedTo" class="form-input" placeholder="Nom d'utilisateur">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskPriority">Priorité</label>
+                            <select id="taskPriority" class="form-select">
+                                <option value="low">Basse</option>
+                                <option value="medium" selected>Moyenne</option>
+                                <option value="high">Haute</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskProgress">Progression (%)</label>
+                            <input type="number" id="taskProgress" class="form-input" min="0" max="100" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskStatus">Statut</label>
+                            <select id="taskStatus" class="form-select">
+                                <option value="todo">À faire</option>
+                                <option value="in-progress">En cours</option>
+                                <option value="completed">Terminé</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskDependencies">Dépendances (IDs séparés par virgule)</label>
+                        <input type="text" id="taskDependencies" class="form-input" placeholder="1,2,3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskVulnerabilities">Vulnérabilités liées (IDs séparés par virgule)</label>
+                        <input type="text" id="taskVulnerabilities" class="form-input" placeholder="vuln1,vuln2">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveTask()" id="saveTaskBtn">Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MILESTONE MODAL -->
+    <div id="milestoneModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="milestoneModalTitle">Nouveau Jalon</h2>
+                <button class="close-btn" onclick="closeMilestoneModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="milestoneForm">
+                    <div class="form-group">
+                        <label for="milestoneWorkspace">Projet *</label>
+                        <select id="milestoneWorkspace" class="form-select" required>
+                            <option value="">Sélectionner un projet...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="milestoneCommand">Nom du jalon *</label>
+                        <input type="text" id="milestoneCommand" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="milestoneDescription">Description</label>
+                        <textarea id="milestoneDescription" class="form-textarea" placeholder="Description du jalon..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="milestoneStartDate">Date de début</label>
+                            <input type="datetime-local" id="milestoneStartDate" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="milestoneEndDate">Date limite</label>
+                            <input type="datetime-local" id="milestoneEndDate" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="milestoneAssignedTo">Assigné à</label>
+                        <input type="text" id="milestoneAssignedTo" class="form-input" placeholder="Nom d'utilisateur">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeMilestoneModal()">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveMilestone()" id="saveMilestoneBtn">Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration API
+        const API_CONFIG = {
+            baseURL: 'http://localhost:8082/api',
+            credentials: btoa('faraday:faraday')
+        };
+
+        // État global
+        let workspacesData = [];
+        let tasksData = [];
+        let milestonesData = [];
+        let filteredTasks = [];
+        let isEditMode = false;
+        let editingTaskId = null;
+        let currentWorkspace = null;
+
+        console.log('🚀 Faraday Planner initialisé');
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWorkspaces();
+            loadTasks();
+            loadMilestones();
+        });
+
+        // WORKSPACE FUNCTIONS
+        async function loadWorkspaces() {
+            try {
+                showLoading(true);
+                
+                console.log('📂 Chargement des workspaces...');
+                
+                // Essayer de charger depuis l'API
+                try {
+                    const response = await fetch(`${API_CONFIG.baseURL}/api/v3/ws/`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Basic ${API_CONFIG.credentials}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('Content-Type') || '';
+                        if (contentType.includes('application/json')) {
+                            const data = await response.json();
+                            workspacesData = Array.isArray(data) ? data : (data.rows || data.data || []);
+                            console.log('✅ Workspaces chargés depuis API:', workspacesData.length);
+                        } else {
+                            throw new Error('Réponse HTML reçue au lieu de JSON - Proxy non démarré');
+                        }
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API non disponible, utilisation des données statiques:', apiError.message);
+                    
+                    // Utiliser des projets statiques si l'API n'est pas disponible
+                    workspacesData = [
+                        {
+                            id: 'demo1',
+                            name: 'Audit Sécurité Web',
+                            description: 'Audit de sécurité pour application web e-commerce',
+                            status: 'active',
+                            created_at: '2025-01-15T10:00:00Z',
+                            scope: ['SQL Injection', 'XSS', 'CSRF', 'Authentication']
+                        },
+                        {
+                            id: 'demo2', 
+                            name: 'Pentest Infrastructure',
+                            description: 'Test d\'intrusion sur infrastructure réseau',
+                            status: 'active',
+                            created_at: '2025-01-20T14:30:00Z',
+                            scope: ['Port Scanning', 'Vulnerability Assessment', 'Privilege Escalation']
+                        },
+                        {
+                            id: 'demo3',
+                            name: 'Mobile App Security',
+                            description: 'Évaluation sécurité application mobile bancaire',
+                            status: 'completed',
+                            created_at: '2025-01-10T09:15:00Z',
+                            scope: ['Static Analysis', 'Dynamic Analysis', 'API Security']
+                        },
+                        {
+                            id: 'demo4',
+                            name: 'Red Team Exercise',
+                            description: 'Exercice Red Team complet sur environnement prod',
+                            status: 'active',
+                            created_at: '2025-01-25T16:45:00Z',
+                            scope: ['Social Engineering', 'Physical Security', 'Network Intrusion']
+                        },
+                        {
+                            id: 'demo5',
+                            name: 'IoT Security Assessment',
+                            description: 'Audit sécurité dispositifs IoT industriels',
+                            status: 'planning',
+                            created_at: '2025-01-30T11:20:00Z',
+                            scope: ['Firmware Analysis', 'Communication Security', 'Device Management']
+                        }
+                    ];
+                    
+                    showAlert('Mode démo activé - Projets statiques chargés. Démarrez le proxy pour les vrais données.', 'info');
+                }
+                
+                console.log('✅ Workspaces disponibles:', workspacesData.length);
+                
+                // Populate workspace select in milestone modal
+                populateWorkspaceSelect();
+                
+                // Display projects
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur critique chargement workspaces:', error);
+                showAlert('Erreur critique: ' + error.message, 'error');
+                
+                // En dernier recours, utiliser un projet minimal
+                workspacesData = [{
+                    id: 'fallback',
+                    name: 'Projet par défaut',
+                    description: 'Projet de secours',
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                }];
+                
+                populateWorkspaceSelect();
+                displayProjects();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function populateWorkspaceSelect() {
+            const select = document.getElementById('milestoneWorkspace');
+            if (!select) return;
+            
+            // Clear existing options except first
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+            
+            workspacesData.forEach(workspace => {
+                const option = document.createElement('option');
+                option.value = workspace.name;
+                option.textContent = workspace.name;
+                select.appendChild(option);
+            });
+        }
+
+        // TASKS FUNCTIONS
+        async function loadTasks() {
+            try {
+                console.log('📋 Chargement des tâches...');
+                
+                // Charger d'abord les données sauvegardées localement
+                try {
+                    const savedTasks = localStorage.getItem('faraday_tasks');
+                    if (savedTasks) {
+                        const parsedTasks = JSON.parse(savedTasks);
+                        tasksData = Array.isArray(parsedTasks) ? parsedTasks : [];
+                        console.log('💾 Tâches chargées depuis localStorage:', tasksData.length);
+                    } else {
+                        tasksData = [];
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Erreur chargement localStorage:', error);
+                    tasksData = [];
+                }
+                
+                // Essayer de charger depuis l'API (optionnel)
+                try {
+                    for (const workspace of workspacesData) {
+                        try {
+                            const response = await fetch(`${API_CONFIG.baseURL}/api/v3/ws/${workspace.name}/commands/`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Basic ${API_CONFIG.credentials}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            if (response.ok) {
+                                const contentType = response.headers.get('Content-Type') || '';
+                                if (contentType.includes('application/json')) {
+                                    const data = await response.json();
+                                    const workspaceTasks = Array.isArray(data) ? data : (data.rows || data.data || []);
+                                    
+                                    // Add workspace reference to each task
+                                    workspaceTasks.forEach(task => {
+                                        task.workspace = workspace.name;
+                                        task.type = 'task';
+                                    });
+                                    
+                                    tasksData.push(...workspaceTasks);
+                                }
+                            }
+                        } catch (error) {
+                            console.warn(`⚠️ Erreur chargement tâches pour ${workspace.name}:`, error);
+                        }
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API non disponible, génération de tâches statiques:', apiError.message);
+                }
+                
+                // Si aucune tâche chargée depuis l'API, utiliser des tâches statiques
+                if (tasksData.length === 0) {
+                    tasksData = [
+                        // Tâches pour "Audit Sécurité Web"
+                        {
+                            id: 'task1',
+                            command: 'Reconnaissance passive',
+                            description: 'Collecte d\'informations sur le domaine cible sans interaction directe',
+                            workspace: 'Audit Sécurité Web',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'completed',
+                            progress: 100,
+                            assigned_to: 'pentester1',
+                            start_date: '2025-01-15T09:00:00Z',
+                            end_date: '2025-01-15T12:00:00Z'
+                        },
+                        {
+                            id: 'task2',
+                            command: 'Scan de vulnérabilités',
+                            description: 'Scan automatisé des vulnérabilités web avec OWASP ZAP',
+                            workspace: 'Audit Sécurité Web',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'in-progress',
+                            progress: 75,
+                            assigned_to: 'pentester1',
+                            start_date: '2025-01-15T14:00:00Z',
+                            end_date: '2025-01-16T10:00:00Z'
+                        },
+                        {
+                            id: 'task3',
+                            command: 'Test injection SQL',
+                            description: 'Test manuel et automatisé des injections SQL sur tous les formulaires',
+                            workspace: 'Audit Sécurité Web',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'todo',
+                            progress: 0,
+                            assigned_to: 'pentester2',
+                            start_date: '2025-01-16T09:00:00Z',
+                            end_date: '2025-01-17T17:00:00Z'
+                        },
+                        
+                        // Tâches pour "Pentest Infrastructure"
+                        {
+                            id: 'task4',
+                            command: 'Découverte réseau',
+                            description: 'Identification des hôtes actifs et services exposés',
+                            workspace: 'Pentest Infrastructure',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'completed',
+                            progress: 100,
+                            assigned_to: 'netpentester',
+                            start_date: '2025-01-20T08:00:00Z',
+                            end_date: '2025-01-20T16:00:00Z'
+                        },
+                        {
+                            id: 'task5',
+                            command: 'Exploitation vulnerabilités critiques',
+                            description: 'Exploitation des CVE identifiées sur les services exposés',
+                            workspace: 'Pentest Infrastructure',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'in-progress',
+                            progress: 60,
+                            assigned_to: 'netpentester',
+                            start_date: '2025-01-21T09:00:00Z',
+                            end_date: '2025-01-23T17:00:00Z'
+                        },
+                        
+                        // Tâches pour "Mobile App Security"
+                        {
+                            id: 'task6',
+                            command: 'Analyse statique APK',
+                            description: 'Reverse engineering et analyse du code source de l\'application',
+                            workspace: 'Mobile App Security',
+                            type: 'task',
+                            priority: 'medium',
+                            status: 'completed',
+                            progress: 100,
+                            assigned_to: 'mobile_expert',
+                            start_date: '2025-01-10T10:00:00Z',
+                            end_date: '2025-01-12T15:00:00Z'
+                        },
+                        {
+                            id: 'task7',
+                            command: 'Test API backends',
+                            description: 'Test de sécurité des APIs utilisées par l\'application mobile',
+                            workspace: 'Mobile App Security',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'completed',
+                            progress: 100,
+                            assigned_to: 'api_tester',
+                            start_date: '2025-01-13T09:00:00Z',
+                            end_date: '2025-01-14T17:00:00Z'
+                        },
+                        
+                        // Tâches pour "Red Team Exercise"
+                        {
+                            id: 'task8',
+                            command: 'Social Engineering',
+                            description: 'Campagne de phishing ciblé et ingénierie sociale',
+                            workspace: 'Red Team Exercise',
+                            type: 'task',
+                            priority: 'high',
+                            status: 'in-progress',
+                            progress: 40,
+                            assigned_to: 'social_eng',
+                            start_date: '2025-01-25T09:00:00Z',
+                            end_date: '2025-01-30T17:00:00Z'
+                        },
+                        {
+                            id: 'task9',
+                            command: 'Persistence et lateral movement',
+                            description: 'Établissement de persistence et mouvement latéral dans le réseau',
+                            workspace: 'Red Team Exercise',
+                            type: 'task',
+                            priority: 'medium',
+                            status: 'todo',
+                            progress: 0,
+                            assigned_to: 'red_team_lead',
+                            start_date: '2025-01-28T09:00:00Z',
+                            end_date: '2025-02-05T17:00:00Z'
+                        },
+                        
+                        // Tâches pour "IoT Security Assessment"
+                        {
+                            id: 'task10',
+                            command: 'Analyse firmware',
+                            description: 'Extraction et analyse de sécurité du firmware des dispositifs IoT',
+                            workspace: 'IoT Security Assessment',
+                            type: 'task',
+                            priority: 'medium',
+                            status: 'todo',
+                            progress: 0,
+                            assigned_to: 'iot_specialist',
+                            start_date: '2025-02-01T09:00:00Z',
+                            end_date: '2025-02-03T17:00:00Z'
+                        }
+                    ];
+                    
+                    console.log('✅ Tâches statiques générées:', tasksData.length);
+                }
+                
+                console.log('✅ Tâches chargées:', tasksData.length);
+                filteredTasks = [...tasksData];
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur chargement tâches:', error);
+            }
+        }
+
+        async function loadMilestones() {
+            try {
+                console.log('🏁 Chargement des jalons...');
+                
+                // Charger d'abord les données sauvegardées localement
+                try {
+                    const savedMilestones = localStorage.getItem('faraday_milestones');
+                    if (savedMilestones) {
+                        const parsedMilestones = JSON.parse(savedMilestones);
+                        milestonesData = Array.isArray(parsedMilestones) ? parsedMilestones : [];
+                        console.log('💾 Jalons chargés depuis localStorage:', milestonesData.length);
+                    } else {
+                        milestonesData = [];
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Erreur chargement localStorage jalons:', error);
+                    milestonesData = [];
+                }
+                
+                // Si aucun jalon sauvegardé, générer des jalons statiques par défaut
+                if (milestonesData.length === 0) {
+                    milestonesData = [
+                    {
+                        id: 'milestone1',
+                        command: 'Phase Reconnaissance Terminée',
+                        description: 'Toutes les activités de reconnaissance passive et active sont terminées',
+                        workspace: 'Audit Sécurité Web',
+                        type: 'milestone',
+                        status: 'completed',
+                        assigned_to: 'chef_projet',
+                        start_date: '2025-01-15T09:00:00Z',
+                        end_date: '2025-01-16T17:00:00Z'
+                    },
+                    {
+                        id: 'milestone2',
+                        command: 'Livraison Rapport Préliminaire',
+                        description: 'Rapport préliminaire avec vulnérabilités critiques identifiées',
+                        workspace: 'Pentest Infrastructure',
+                        type: 'milestone',
+                        status: 'in-progress',
+                        assigned_to: 'chef_projet',
+                        start_date: '2025-01-22T09:00:00Z',
+                        end_date: '2025-01-24T17:00:00Z'
+                    },
+                    {
+                        id: 'milestone3',
+                        command: 'Présentation Résultats Client',
+                        description: 'Présentation finale des résultats et recommandations au client',
+                        workspace: 'Mobile App Security',
+                        type: 'milestone',
+                        status: 'completed',
+                        assigned_to: 'responsable_client',
+                        start_date: '2025-01-14T14:00:00Z',
+                        end_date: '2025-01-14T16:00:00Z'
+                    },
+                    {
+                        id: 'milestone4',
+                        command: 'Go/No-Go Phase Exploitation',
+                        description: 'Décision de progression vers la phase d\'exploitation active',
+                        workspace: 'Red Team Exercise',
+                        type: 'milestone',
+                        status: 'todo',
+                        assigned_to: 'red_team_lead',
+                        start_date: '2025-01-28T09:00:00Z',
+                        end_date: '2025-01-28T12:00:00Z'
+                    }
+                ];
+                
+                // Sauvegarder les jalons par défaut
+                localStorage.setItem('faraday_milestones', JSON.stringify(milestonesData));
+                console.log('✅ Jalons par défaut générés:', milestonesData.length);
+                }
+                
+                // Ajouter les jalons aux tâches avec le bon type
+                milestonesData.forEach(milestone => {
+                    // Vérifier si le jalon n'est pas déjà dans tasksData
+                    if (!tasksData.find(t => t.id === milestone.id)) {
+                        tasksData.push({
+                            ...milestone,
+                            type: 'milestone'
+                        });
+                    }
+                });
+                
+                console.log('✅ Jalons chargés:', milestonesData.length);
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur chargement jalons:', error);
+            }
+        }
+
+        // DISPLAY FUNCTIONS
+        function displayProjects() {
+            const container = document.getElementById('projectsGrid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (workspacesData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Aucun projet trouvé</h3>
+                        <p>Aucun workspace actif disponible</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            workspacesData.forEach(workspace => {
+                const projectCard = createProjectCard(workspace);
+                container.appendChild(projectCard);
+            });
+        }
+
+        function createProjectCard(workspace) {
+            const workspaceTasks = tasksData.filter(task => task.workspace === workspace.name && task.type !== 'milestone');
+            const workspaceMilestones = tasksData.filter(task => task.workspace === workspace.name && task.type === 'milestone');
+            const allItems = [...workspaceTasks, ...workspaceMilestones];
+            
+            const completedTasks = workspaceTasks.filter(task => task.status === 'completed' || task.progress === 100).length;
+            const totalTasks = workspaceTasks.length;
+            
+            // Calculer le statut du projet
+            let projectStatus = workspace.status || 'active';
+            if (totalTasks > 0) {
+                const progressPercentage = (completedTasks / totalTasks) * 100;
+                if (progressPercentage === 100) projectStatus = 'completed';
+                else if (progressPercentage > 0) projectStatus = 'in-progress';
+                else projectStatus = 'planning';
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'project-column fade-in';
+            
+            card.innerHTML = `
+                <div class="project-header">
+                    <div class="project-title">
+                        ${workspace.name}
+                        <div style="font-size: 12px; opacity: 0.8; font-weight: normal; margin-top: 4px;">
+                            ${workspace.description || 'Aucune description'}
+                        </div>
+                    </div>
+                    <div class="project-meta">
+                        <div class="project-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-tasks"></i>
+                                <span>${totalTasks}</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-flag"></i>
+                                <span>${workspaceMilestones.length}</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>${completedTasks}/${totalTasks}</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; opacity: 0.8;">
+                            <i class="fas fa-circle" style="color: ${projectStatus === 'completed' ? '#48bb78' : projectStatus === 'in-progress' ? '#ed8936' : '#718096'}; margin-right: 4px;"></i>
+                            ${projectStatus === 'completed' ? 'Terminé' : projectStatus === 'in-progress' ? 'En cours' : projectStatus === 'planning' ? 'Planification' : 'Actif'}
+                        </div>
+                    </div>
+                    <button class="add-task-btn" onclick="showCreateTaskModal('${workspace.name}')" title="Ajouter une tâche">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="tasks-container">
+                    <div class="tasks-list" id="tasks-${workspace.name.replace(/\s+/g, '_')}">
+                        ${allItems.length === 0 ? `
+                            <div class="empty-state">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p>Aucune tâche dans ce projet</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Add tasks and milestones
+            const tasksList = card.querySelector(`#tasks-${workspace.name.replace(/\s+/g, '_')}`);
+            if (allItems.length > 0) {
+                tasksList.innerHTML = '';
+                
+                // Trier les éléments : jalons en premier, puis tâches par priorité
+                const sortedItems = allItems.sort((a, b) => {
+                    if (a.type === 'milestone' && b.type !== 'milestone') return -1;
+                    if (a.type !== 'milestone' && b.type === 'milestone') return 1;
+                    
+                    const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+                    return (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+                });
+                
+                sortedItems.forEach(item => {
+                    const itemCard = item.type === 'milestone' ? createMilestoneCard(item) : createTaskCard(item);
+                    tasksList.appendChild(itemCard);
+                });
+            }
+            
+            return card;
+        }
+
+        function createTaskCard(task) {
+            const priority = task.priority || 'medium';
+            const progress = task.progress || 0;
+            const status = task.status || 'todo';
+            
+            const card = document.createElement('div');
+            card.className = `task-card ${priority}-priority`;
+            
+            const formatDate = (dateStr) => {
+                if (!dateStr) return 'Non défini';
+                try {
+                    return new Date(dateStr).toLocaleDateString('fr-FR');
+                } catch (e) {
+                    return dateStr;
+                }
+            };
+            
+            card.innerHTML = `
+                <div class="task-actions">
+                    <button class="task-action-btn" onclick="editTask('${task.id}')" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="task-action-btn" onclick="deleteTask('${task.id}')" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                
+                <div class="task-title">${task.command || task.name || 'Tâche sans nom'}</div>
+                <div class="task-description">${task.description || 'Aucune description'}</div>
+                
+                <div class="task-meta">
+                    <div>
+                        <i class="fas fa-user"></i>
+                        ${task.assigned_to || 'Non assigné'}
+                    </div>
+                    <div>
+                        <i class="fas fa-calendar"></i>
+                        ${formatDate(task.end_date)}
+                    </div>
+                    <div class="task-progress">
+                        <span>${progress}%</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function createMilestoneCard(milestone) {
+            const card = document.createElement('div');
+            card.className = 'task-card milestone-card';
+            
+            card.innerHTML = `
+                <div class="task-actions">
+                    <button class="task-action-btn" onclick="editMilestone('${milestone.id}')" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="task-action-btn" onclick="deleteMilestone('${milestone.id}')" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                
+                <div class="task-title">
+                    <i class="fas fa-flag"></i>
+                    ${milestone.command || milestone.name || 'Jalon sans nom'}
+                </div>
+                <div class="task-description">${milestone.description || 'Aucune description'}</div>
+                
+                <div class="task-meta" style="color: rgba(255,255,255,0.8);">
+                    <div>
+                        <i class="fas fa-user"></i>
+                        ${milestone.assigned_to || 'Non assigné'}
+                    </div>
+                    <div>
+                        <i class="fas fa-calendar"></i>
+                        ${milestone.end_date ? new Date(milestone.end_date).toLocaleDateString('fr-FR') : 'Non défini'}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // MODAL FUNCTIONS
+        function showCreateTaskModal(workspaceName) {
+            currentWorkspace = workspaceName;
+            isEditMode = false;
+            editingTaskId = null;
+            
+            document.getElementById('taskModalTitle').textContent = `Nouvelle Tâche - ${workspaceName}`;
+            document.getElementById('saveTaskBtn').textContent = 'Créer';
+            document.getElementById('taskForm').reset();
+            
+            // Set default dates
+            const now = new Date();
+            const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            
+            document.getElementById('taskStartDate').value = now.toISOString().slice(0, 16);
+            document.getElementById('taskEndDate').value = tomorrow.toISOString().slice(0, 16);
+            
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        function showCreateMilestoneModal() {
+            isEditMode = false;
+            document.getElementById('milestoneModalTitle').textContent = 'Nouveau Jalon';
+            document.getElementById('saveMilestoneBtn').textContent = 'Créer';
+            document.getElementById('milestoneForm').reset();
+            
+            document.getElementById('milestoneModal').style.display = 'block';
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('taskForm').reset();
+            isEditMode = false;
+            editingTaskId = null;
+            currentWorkspace = null;
+        }
+
+        function closeMilestoneModal() {
+            document.getElementById('milestoneModal').style.display = 'none';
+            document.getElementById('milestoneForm').reset();
+        }
+
+        // CRUD OPERATIONS
+        async function saveTask() {
+            const form = document.getElementById('taskForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const taskData = {
+                id: isEditMode ? editingTaskId : 'task_' + Date.now(),
+                command: document.getElementById('taskCommand').value,
+                description: document.getElementById('taskDescription').value,
+                workspace: currentWorkspace,
+                start_date: document.getElementById('taskStartDate').value || null,
+                end_date: document.getElementById('taskEndDate').value || null,
+                assigned_to: document.getElementById('taskAssignedTo').value || 'Non assigné',
+                priority: document.getElementById('taskPriority').value,
+                progress: parseInt(document.getElementById('taskProgress').value) || 0,
+                status: document.getElementById('taskStatus').value,
+                dependencies: document.getElementById('taskDependencies').value || null,
+                linked_vulnerabilities: document.getElementById('taskVulnerabilities').value || null,
+                type: 'task',
+                created_at: new Date().toISOString()
+            };
+            
+            try {
+                document.getElementById('saveTaskBtn').disabled = true;
+                
+                console.log(`💾 ${isEditMode ? 'Modification' : 'Création'} tâche locale:`, taskData);
+                
+                if (isEditMode && editingTaskId) {
+                    // Modifier la tâche existante
+                    const taskIndex = tasksData.findIndex(t => t.id === editingTaskId);
+                    if (taskIndex !== -1) {
+                        tasksData[taskIndex] = { ...tasksData[taskIndex], ...taskData };
+                    }
+                } else {
+                    // Ajouter nouvelle tâche
+                    tasksData.push(taskData);
+                }
+                
+                // Sauvegarder en localStorage pour persistance
+                localStorage.setItem('faraday_tasks', JSON.stringify(tasksData));
+                
+                showAlert(`Tâche ${isEditMode ? 'modifiée' : 'créée'} avec succès!`, 'success');
+                closeTaskModal();
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde tâche:', error);
+                showAlert('Erreur lors de la sauvegarde: ' + error.message, 'error');
+            } finally {
+                document.getElementById('saveTaskBtn').disabled = false;
+            }
+        }
+
+        async function editTask(taskId) {
+            const task = tasksData.find(t => t.id === taskId);
+            if (!task) {
+                showAlert('Tâche introuvable', 'error');
+                return;
+            }
+            
+            isEditMode = true;
+            editingTaskId = taskId;
+            currentWorkspace = task.workspace;
+            
+            document.getElementById('taskModalTitle').textContent = `Modifier Tâche - ${task.workspace}`;
+            document.getElementById('saveTaskBtn').textContent = 'Modifier';
+            
+            // Fill form
+            document.getElementById('taskCommand').value = task.command || '';
+            document.getElementById('taskDescription').value = task.description || '';
+            document.getElementById('taskStartDate').value = task.start_date ? task.start_date.slice(0, 16) : '';
+            document.getElementById('taskEndDate').value = task.end_date ? task.end_date.slice(0, 16) : '';
+            document.getElementById('taskAssignedTo').value = task.assigned_to || '';
+            document.getElementById('taskPriority').value = task.priority || 'medium';
+            document.getElementById('taskProgress').value = task.progress || 0;
+            document.getElementById('taskStatus').value = task.status || 'todo';
+            document.getElementById('taskDependencies').value = task.dependencies || '';
+            document.getElementById('taskVulnerabilities').value = task.linked_vulnerabilities || '';
+            
+            document.getElementById('taskModal').style.display = 'block';
+        }
+
+        async function deleteTask(taskId) {
+            const task = tasksData.find(t => t.id === taskId);
+            if (!task) {
+                showAlert('Tâche introuvable', 'error');
+                return;
+            }
+            
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer la tâche "${task.command}" ?`)) {
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Suppression tâche locale:', taskId);
+                
+                // Supprimer de tasksData
+                tasksData = tasksData.filter(t => t.id !== taskId);
+                
+                // Supprimer de milestonesData si c'est un jalon
+                if (task.type === 'milestone') {
+                    milestonesData = milestonesData.filter(m => m.id !== taskId);
+                    localStorage.setItem('faraday_milestones', JSON.stringify(milestonesData));
+                }
+                
+                // Sauvegarder en localStorage
+                localStorage.setItem('faraday_tasks', JSON.stringify(tasksData));
+                
+                showAlert('Tâche supprimée avec succès!', 'success');
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur suppression tâche:', error);
+                showAlert('Erreur lors de la suppression: ' + error.message, 'error');
+            }
+        }
+
+        async function editMilestone(milestoneId) {
+            const milestone = milestonesData.find(m => m.id === milestoneId);
+            if (!milestone) {
+                showAlert('Jalon introuvable', 'error');
+                return;
+            }
+            
+            isEditMode = true;
+            editingTaskId = milestoneId;
+            
+            document.getElementById('milestoneModalTitle').textContent = `Modifier Jalon - ${milestone.workspace}`;
+            document.getElementById('saveMilestoneBtn').textContent = 'Modifier';
+            
+            // Fill form
+            document.getElementById('milestoneWorkspace').value = milestone.workspace || '';
+            document.getElementById('milestoneCommand').value = milestone.command || '';
+            document.getElementById('milestoneDescription').value = milestone.description || '';
+            document.getElementById('milestoneStartDate').value = milestone.start_date ? milestone.start_date.slice(0, 16) : '';
+            document.getElementById('milestoneEndDate').value = milestone.end_date ? milestone.end_date.slice(0, 16) : '';
+            document.getElementById('milestoneAssignedTo').value = milestone.assigned_to || '';
+            
+            document.getElementById('milestoneModal').style.display = 'block';
+        }
+
+        async function deleteMilestone(milestoneId) {
+            const milestone = milestonesData.find(m => m.id === milestoneId);
+            if (!milestone) {
+                showAlert('Jalon introuvable', 'error');
+                return;
+            }
+            
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer le jalon "${milestone.command}" ?`)) {
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Suppression jalon local:', milestoneId);
+                
+                // Supprimer de milestonesData
+                milestonesData = milestonesData.filter(m => m.id !== milestoneId);
+                
+                // Supprimer de tasksData
+                tasksData = tasksData.filter(t => t.id !== milestoneId);
+                
+                // Sauvegarder en localStorage
+                localStorage.setItem('faraday_milestones', JSON.stringify(milestonesData));
+                localStorage.setItem('faraday_tasks', JSON.stringify(tasksData));
+                
+                showAlert('Jalon supprimé avec succès!', 'success');
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur suppression jalon:', error);
+                showAlert('Erreur lors de la suppression: ' + error.message, 'error');
+            }
+        }
+
+        async function saveMilestone() {
+            const form = document.getElementById('milestoneForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const workspaceName = document.getElementById('milestoneWorkspace').value;
+            const milestoneData = {
+                id: 'milestone_' + Date.now(),
+                command: document.getElementById('milestoneCommand').value,
+                description: document.getElementById('milestoneDescription').value,
+                workspace: workspaceName,
+                start_date: document.getElementById('milestoneStartDate').value || null,
+                end_date: document.getElementById('milestoneEndDate').value || null,
+                assigned_to: document.getElementById('milestoneAssignedTo').value || 'Non assigné',
+                priority: 'high',
+                status: 'todo',
+                type: 'milestone',
+                created_at: new Date().toISOString()
+            };
+            
+            try {
+                document.getElementById('saveMilestoneBtn').disabled = true;
+                
+                console.log('💾 Création jalon local:', milestoneData);
+                
+                // Ajouter le jalon aux données locales
+                milestonesData.push(milestoneData);
+                tasksData.push(milestoneData);
+                
+                // Sauvegarder en localStorage pour persistance
+                localStorage.setItem('faraday_milestones', JSON.stringify(milestonesData));
+                localStorage.setItem('faraday_tasks', JSON.stringify(tasksData));
+                
+                showAlert('Jalon créé avec succès!', 'success');
+                closeMilestoneModal();
+                displayProjects();
+                
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde jalon:', error);
+                showAlert('Erreur lors de la sauvegarde: ' + error.message, 'error');
+            } finally {
+                document.getElementById('saveMilestoneBtn').disabled = false;
+            }
+        }
+
+        // FILTER FUNCTIONS
+        function filterTasks() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const assigneeFilter = document.getElementById('assigneeFilter').value;
+            
+            filteredTasks = tasksData.filter(task => {
+                const matchesSearch = !searchTerm || 
+                    (task.command || '').toLowerCase().includes(searchTerm) ||
+                    (task.description || '').toLowerCase().includes(searchTerm);
+                    
+                const matchesPriority = !priorityFilter || task.priority === priorityFilter;
+                const matchesStatus = !statusFilter || task.status === statusFilter;
+                const matchesAssignee = !assigneeFilter || task.assigned_to === assigneeFilter;
+                
+                return matchesSearch && matchesPriority && matchesStatus && matchesAssignee;
+            });
+            
+            displayProjects();
+        }
+
+        // UTILITY FUNCTIONS
+        function showLoading(show) {
+            const loadingEl = document.getElementById('loadingState');
+            const gridEl = document.getElementById('projectsGrid');
+            
+            if (loadingEl) loadingEl.style.display = show ? 'flex' : 'none';
+            if (gridEl) gridEl.style.display = show ? 'none' : 'grid';
+        }
+
+        function showAlert(message, type = 'info') {
+            // Create alert element
+            const alertEl = document.createElement('div');
+            alertEl.className = `alert alert-${type}`;
+            alertEl.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Insert at top of container
+            const container = document.querySelector('.container');
+            container.insertBefore(alertEl, container.firstChild);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertEl.parentNode) {
+                    alertEl.parentNode.removeChild(alertEl);
+                }
+            }, 5000);
+        }
+
+        function refreshData() {
+            loadWorkspaces();
+            loadTasks();
+            loadMilestones();
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            const taskModal = document.getElementById('taskModal');
+            const milestoneModal = document.getElementById('milestoneModal');
+            
+            if (event.target === taskModal) {
+                closeTaskModal();
+            }
+            if (event.target === milestoneModal) {
+                closeMilestoneModal();
+            }
+        }
+    </script>
+</body>
+</html>

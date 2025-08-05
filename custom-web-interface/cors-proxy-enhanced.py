@@ -231,7 +231,7 @@ class CORSProxyHandler(http.server.BaseHTTPRequestHandler):
 
 
 def main():
-    PORT = 8082  # Changer le port pour éviter les conflits
+    PORT = 8081  # Port pour le proxy CORS amélioré
     
     print("🚀 Démarrage du proxy CORS Faraday...")
     print(f"🌐 Port: {PORT}")

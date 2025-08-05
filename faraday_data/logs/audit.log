@@ -137,3 +137,85 @@
 2025-07-24T16:39:41+0000 - faraday.server.app - INFO {Dummy-191} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-24 16:39:41.288054]
 2025-07-25T17:45:22+0000 - audit - INFO {Dummy-2003} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-25 17:45:22.385869]
 2025-07-25T17:45:22+0000 - faraday.server.app - INFO {Dummy-2003} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-25 17:45:22.385869]
+2025-07-27T23:50:46+0000 - audit - INFO {Dummy-3478} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-27 23:50:46.590044]
+2025-07-27T23:50:46+0000 - faraday.server.app - INFO {Dummy-3478} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-27 23:50:46.590044]
+2025-07-28T01:18:10+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-28T01:18:10+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-28T01:18:15+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-28T01:18:15+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-28T01:19:15+0000 - faraday.server.app - INFO {MainThread} [pid:24] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-28T01:19:15+0000 - faraday.server.app - INFO {MainThread} [pid:24] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-28T01:19:23+0000 - faraday.server.app - INFO {MainThread} [pid:28] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-28T01:19:23+0000 - faraday.server.app - INFO {MainThread} [pid:28] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-28T01:19:30+0000 - audit - INFO {Dummy-7} [pid:24] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-28 01:19:30.064930]
+2025-07-28T01:19:30+0000 - faraday.server.app - INFO {Dummy-7} [pid:24] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-28 01:19:30.064930]
+2025-07-28T01:31:23+0000 - faraday.server.app - WARNING {Dummy-38} [pid:24] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-28T01:51:59+0000 - faraday.server.app - WARNING {Dummy-88} [pid:24] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-28T16:04:55+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-28T16:04:55+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-28T16:04:59+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-28T16:04:59+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-28T16:05:42+0000 - audit - INFO {Dummy-6} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-28 16:05:42.075041]
+2025-07-28T16:05:42+0000 - faraday.server.app - INFO {Dummy-6} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-28 16:05:42.075041]
+2025-07-28T16:55:13+0000 - faraday.server.app - WARNING {Dummy-130} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-28T17:05:48+0000 - faraday.server.app - WARNING {Dummy-144} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-28T17:53:36+0000 - faraday.server.app - WARNING {Dummy-257} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-28T18:13:37+0000 - faraday.server.app - INFO {Thread-297} [pid:23] [debouncer.py:352 - update_workspace_vulns_count()]  workspace vulns count took 0:00:00.571029
+2025-07-28T18:21:22+0000 - faraday.server.app - WARNING {Dummy-311} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-28T18:32:13+0000 - faraday.server.app - WARNING {Dummy-324} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-30T15:06:48+0000 - audit - INFO {Dummy-325} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-30 15:06:48.778187]
+2025-07-30T15:06:48+0000 - faraday.server.app - INFO {Dummy-325} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-30 15:06:48.778187]
+2025-07-30T15:11:09+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-30T15:11:09+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-30T15:11:17+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-30T15:11:17+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-30T15:11:18+0000 - audit - INFO {Dummy-8} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-30 15:11:18.218652]
+2025-07-30T15:11:18+0000 - faraday.server.app - INFO {Dummy-8} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-30 15:11:18.218652]
+2025-07-30T16:28:11+0000 - faraday.server.app - WARNING {Dummy-102} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-30T16:48:17+0000 - faraday.server.app - WARNING {Dummy-154} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-30T16:55:14+0000 - faraday.server.app - WARNING {Dummy-167} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-30T17:03:50+0000 - faraday.server.app - WARNING {Dummy-188} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-30T17:46:04+0000 - faraday.server.app - WARNING {Dummy-253} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-30T18:23:09+0000 - faraday.server.app - WARNING {Dummy-318} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-07-30T18:23:21+0000 - faraday.server.app - WARNING {Dummy-317} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-07-31T00:35:46+0000 - faraday.server.app - WARNING {Dummy-387} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T00:38:51+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-31T00:38:51+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-31T00:38:55+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-07-31T00:38:55+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-07-31T00:39:26+0000 - audit - INFO {Dummy-6} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-31 00:39:26.415344]
+2025-07-31T00:39:26+0000 - faraday.server.app - INFO {Dummy-6} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-07-31 00:39:26.415344]
+2025-07-31T00:39:27+0000 - faraday.server.app - WARNING {Dummy-6} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.02
+2025-07-31T01:39:33+0000 - faraday.server.app - WARNING {Dummy-96} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T02:02:51+0000 - faraday.server.app - WARNING {Dummy-171} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T02:07:25+0000 - faraday.server.app - WARNING {Dummy-198} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.02
+2025-07-31T02:08:08+0000 - faraday.server.app - WARNING {Dummy-198} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.03
+2025-07-31T02:20:17+0000 - faraday.server.app - WARNING {Dummy-252} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (19) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.03
+2025-07-31T02:21:32+0000 - faraday.server.app - WARNING {Dummy-269} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (18) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:21:34+0000 - faraday.server.app - WARNING {Dummy-273} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (20) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:21:45+0000 - faraday.server.app - WARNING {Dummy-285} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (18) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:21:47+0000 - faraday.server.app - WARNING {Dummy-290} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (20) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:22:10+0000 - faraday.server.app - WARNING {Dummy-299} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (20) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:22:40+0000 - faraday.server.app - WARNING {Dummy-324} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (20) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:23:05+0000 - faraday.server.app - WARNING {Dummy-334} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (18) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:23:07+0000 - faraday.server.app - WARNING {Dummy-338} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (20) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T02:44:08+0000 - faraday.server.app - WARNING {Dummy-411} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (20) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.00
+2025-07-31T08:53:54+0000 - faraday.server.app - WARNING {Dummy-514} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T09:02:58+0000 - faraday.server.app - WARNING {Dummy-544} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.34
+2025-07-31T09:58:44+0000 - faraday.server.app - WARNING {Dummy-707} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-07-31T09:58:58+0000 - faraday.server.app - WARNING {Dummy-710} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-07-31T10:40:36+0000 - faraday.server.app - WARNING {Dummy-799} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T10:47:54+0000 - faraday.server.app - WARNING {Dummy-819} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T12:25:21+0000 - faraday.server.app - WARNING {Dummy-1027} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T12:38:07+0000 - faraday.server.app - WARNING {Dummy-1059} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-07-31T12:38:09+0000 - faraday.server.app - WARNING {Dummy-1061} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-07-31T13:03:16+0000 - faraday.server.app - WARNING {Dummy-1127} [pid:23] [app.py:250 - load_user_from_request()]  Invalid authorization type
+2025-07-31T13:06:50+0000 - faraday.server.app - WARNING {Dummy-1135} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (19) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-08-05T16:51:50+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-08-05T16:51:50+0000 - faraday.server.app - INFO {MainThread} [pid:23] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-08-05T16:51:58+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:638 - register_extensions()]  Celery is enabled ...
+2025-08-05T16:51:58+0000 - faraday.server.app - INFO {MainThread} [pid:27] [app.py:639 - register_extensions()]  Checking celery configuration ...
+2025-08-05T16:52:12+0000 - audit - INFO {Dummy-10} [pid:23] [app.py:366 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-08-05 16:52:12.915624]
+2025-08-05T16:52:12+0000 - faraday.server.app - INFO {Dummy-10} [pid:23] [app.py:367 - user_logged_in_successful()]  User [faraday] logged in from IP [172.23.0.1] at [2025-08-05 16:52:12.915624]
+2025-08-05T16:52:13+0000 - faraday.server.app - WARNING {Dummy-10} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (17) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01
+2025-08-05T16:52:13+0000 - faraday.server.app - WARNING {Dummy-10} [pid:23] [app.py:299 - log_queries_count()]  Too many queries done (19) in endpoint workspace_api.WorkspaceView:filter. Maximum query time: 0.01

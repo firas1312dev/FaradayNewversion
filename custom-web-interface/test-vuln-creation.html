@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Création Vulnérabilité Faraday</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { border-color: #4caf50; background: #f1f8e9; }
+        .error { border-color: #f44336; background: #ffebee; }
+        .warning { border-color: #ff9800; background: #fff3e0; }
+        .info { border-color: #2196f3; background: #e3f2fd; }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1976d2; }
+        .log {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ Test Création Vulnérabilité Faraday</h1>
+        
+        <div class="test-section info">
+            <h3>Configuration API</h3>
+            <label>URL de base:</label>
+            <input type="text" id="apiUrl" value="http://localhost:8082">
+            
+            <label>Credentials (base64):</label>
+            <input type="text" id="credentials" value="ZmFyYWRheTpmYXJhZGF5">
+            
+            <button onclick="testConnection()">🔍 Tester Connexion</button>
+            <button onclick="listWorkspaces()">📁 Lister Workspaces</button>
+        </div>
+
+        <div class="test-section warning">
+            <h3>Sélection Workspace</h3>
+            <label>Workspace:</label>
+            <select id="workspaceSelect">
+                <option value="">Sélectionner un workspace...</option>
+            </select>
+            <button onclick="loadVulnerabilities()">🛡️ Charger Vulnérabilités</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Création Vulnérabilité</h3>
+            <label>Nom *:</label>
+            <input type="text" id="vulnName" value="Test Vulnérabilité">
+            
+            <label>Sévérité *:</label>
+            <select id="vulnSeverity">
+                <option value="info">Info</option>
+                <option value="low">Faible</option>
+                <option value="medium">Moyenne</option>
+                <option value="high">Élevée</option>
+                <option value="critical">Critique</option>
+            </select>
+            
+            <label>Description:</label>
+            <textarea id="vulnDesc">Vulnérabilité de test créée via l'interface</textarea>
+            
+            <label>Type:</label>
+            <select id="vulnType">
+                <option value="Vulnerability">Vulnérabilité standard</option>
+                <option value="VulnerabilityWeb">Vulnérabilité Web</option>
+            </select>
+            
+            <button onclick="createVulnerability()">➕ Créer Vulnérabilité</button>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Résultats des Tests</h3>
+            <div id="results"></div>
+            <div class="log" id="logOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration globale
+        let currentWorkspace = null;
+        let vulnerabilities = [];
+
+        // Logging
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logOutput = document.getElementById('logOutput');
+            const icon = {
+                'info': 'ℹ️',
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️'
+            }[type] || 'ℹ️';
+            
+            logOutput.textContent += `[${timestamp}] ${icon} ${message}\n`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}]`, message);
+        }
+
+        function showResult(message, type) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-section ${type}`;
+            div.innerHTML = `<strong>${message}</strong>`;
+            results.appendChild(div);
+        }
+
+        // API Helper
+        async function faradayAPI(endpoint, method = 'GET', data = null) {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const credentials = document.getElementById('credentials').value;
+            
+            const config = {
+                method,
+                headers: {
+                    'Authorization': `Basic ${credentials}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (data) {
+                config.body = JSON.stringify(data);
+            }
+            
+            log(`📡 ${method} ${apiUrl}${endpoint}`);
+            if (data) {
+                log(`📤 Données: ${JSON.stringify(data, null, 2)}`);
+            }
+            
+            try {
+                const response = await fetch(`${apiUrl}${endpoint}`, config);
+                const responseText = await response.text();
+                
+                log(`📥 Réponse ${response.status}: ${responseText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${responseText}`);
+                }
+                
+                return responseText ? JSON.parse(responseText) : {};
+            } catch (error) {
+                log(`💥 Erreur: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Tests
+        async function testConnection() {
+            try {
+                log('🔍 Test de connexion à l\'API Faraday...');
+                const info = await faradayAPI('/_api/v3/info');
+                log('✅ Connexion réussie', 'success');
+                showResult(`Connexion réussie - Version: ${info.version || 'inconnue'}`, 'success');
+            } catch (error) {
+                log(`❌ Échec de connexion: ${error.message}`, 'error');
+                showResult(`Échec de connexion: ${error.message}`, 'error');
+            }
+        }
+
+        async function listWorkspaces() {
+            try {
+                log('📁 Chargement des workspaces...');
+                const data = await faradayAPI('/_api/v3/ws');
+                
+                const workspaces = data.rows || data;
+                log(`✅ ${workspaces.length} workspaces trouvés`, 'success');
+                
+                // Remplir le sélecteur
+                const select = document.getElementById('workspaceSelect');
+                select.innerHTML = '<option value="">Sélectionner un workspace...</option>';
+                
+                workspaces.forEach(ws => {
+                    const option = document.createElement('option');
+                    option.value = ws.name;
+                    option.textContent = `${ws.name} (${ws.active ? 'Actif' : 'Inactif'})`;
+                    select.appendChild(option);
+                });
+                
+                showResult(`${workspaces.length} workspaces chargés`, 'success');
+            } catch (error) {
+                log(`❌ Erreur chargement workspaces: ${error.message}`, 'error');
+                showResult(`Erreur chargement workspaces: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadVulnerabilities() {
+            const workspace = document.getElementById('workspaceSelect').value;
+            if (!workspace) {
+                log('⚠️ Aucun workspace sélectionné', 'warning');
+                return;
+            }
+            
+            currentWorkspace = workspace;
+            
+            try {
+                log(`🛡️ Chargement des vulnérabilités pour ${workspace}...`);
+                const data = await faradayAPI(`/_api/v3/ws/${workspace}/vulns`);
+                
+                vulnerabilities = data.vulnerabilities || data.rows || data;
+                log(`✅ ${vulnerabilities.length} vulnérabilités trouvées`, 'success');
+                showResult(`${vulnerabilities.length} vulnérabilités dans ${workspace}`, 'success');
+            } catch (error) {
+                log(`❌ Erreur chargement vulnérabilités: ${error.message}`, 'error');
+                showResult(`Erreur chargement vulnérabilités: ${error.message}`, 'error');
+            }
+        }
+
+        async function createVulnerability() {
+            if (!currentWorkspace) {
+                log('⚠️ Aucun workspace sélectionné', 'warning');
+                showResult('Erreur: Aucun workspace sélectionné', 'error');
+                return;
+            }
+            
+            const vulnData = {
+                name: document.getElementById('vulnName').value || 'Test Vulnérabilité',
+                severity: document.getElementById('vulnSeverity').value || 'info',
+                description: document.getElementById('vulnDesc').value || 'Description de test',
+                type: document.getElementById('vulnType').value || 'Vulnerability',
+                status: 'open',
+                confirmed: false,
+                tool: 'Web UI Test',
+                creator: {
+                    username: 'faraday'
+                },
+                impact: {
+                    accountability: false,
+                    availability: false,
+                    confidentiality: false,
+                    integrity: false
+                }
+            };
+            
+            try {
+                log(`➕ Création vulnérabilité dans ${currentWorkspace}...`);
+                log(`📋 Données: ${JSON.stringify(vulnData, null, 2)}`);
+                
+                const result = await faradayAPI(`/_api/v3/ws/${currentWorkspace}/vulns`, 'POST', vulnData);
+                
+                log('✅ Vulnérabilité créée avec succès!', 'success');
+                showResult(`Vulnérabilité créée avec succès - ID: ${result.id || 'N/A'}`, 'success');
+                
+                // Recharger la liste
+                await loadVulnerabilities();
+                
+            } catch (error) {
+                log(`❌ Erreur création vulnérabilité: ${error.message}`, 'error');
+                showResult(`Erreur création vulnérabilité: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Outil de test chargé');
+            showResult('Outil de test prêt', 'info');
+        });
+    </script>
+</body>
+</html>
